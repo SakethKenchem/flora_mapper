@@ -296,29 +296,6 @@
             background: #153e22;
         }
 
-        .backup-card {
-            background: #f9f9f9;
-            border: 1px dashed #cccccc;
-            border-radius: 4px;
-            padding: 15px;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .btn-backup {
-            background: #2e3d30;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .btn-backup:hover {
-            background: #1e2a20;
-        }
     </style>
 </head>
 
@@ -382,16 +359,12 @@
                 <span class="metric-value">{{ $totalUsers }}</span>
             </div>
             <div class="metric-card">
-                <span class="metric-label">Active Observers</span>
+                <span class="metric-label">Active General Public Users</span>
                 <span class="metric-value">{{ $activeObservers }}</span>
             </div>
             <div class="metric-card">
                 <span class="metric-label">Active Rule sets</span>
                 <span class="metric-value">{{ $thresholdCount }}</span>
-            </div>
-            <div class="metric-card">
-                <span class="metric-label">Backups Done</span>
-                <span class="metric-value">{{ $backupsCount }}</span>
             </div>
         </div>
 
@@ -500,12 +473,6 @@
 
                     <button type="submit" class="btn-execute">Save Threshold Mapping</button>
                 </form>
-
-                <div class="backup-card">
-                    <strong>System Backup Operations</strong>
-                    <div style="font-size: 11px; margin-bottom: 10px; color: #666666; margin-top: 5px;">Dump all active tables into server backup storage.</div>
-                    <button class="btn-backup" onclick="runBackup()">Run System Backup</button>
-                </div>
             </div>
         </div>
     </div>
@@ -523,10 +490,6 @@
 
         function saveThresholds() {
             alert("Assessment thresholds updated successfully.");
-        }
-
-        function runBackup() {
-            alert("Database backup dump executed successfully.");
         }
     </script>
 

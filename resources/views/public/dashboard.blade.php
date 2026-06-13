@@ -284,40 +284,12 @@
                 return;
             }
 
-            const dashboardMap = L.map(mapElement).setView([-1.2921, 36.8219], 6);
+            const dashboardMap = L.map(mapElement).setView([0.0236, 37.9062], 6);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
             }).addTo(dashboardMap);
-
-            // Fetch dynamic assessment data
-            fetch("{{ route('api.vulnerability_data') }}")
-                .then(response => response.json())
-                .then(data => {
-                    data.forEach(r => {
-                        let color = '#9ca3af'; // Not Assessed (Gray)
-                        if (r.vulnerability_level === 'High') {
-                            color = '#ef4444'; // Red
-                        } else if (r.vulnerability_level === 'Moderate') {
-                            color = '#f59e0b'; // Yellow/Orange
-                        } else if (r.vulnerability_level === 'Low') {
-                            color = '#10b981'; // Green
-                        }
-
-                        const marker = L.circleMarker([r.latitude, r.longitude], {
-                            radius: 8,
-                            fillColor: color,
-                            color: "#ffffff",
-                            weight: 1.5,
-                            opacity: 1,
-                            fillOpacity: 0.8
-                        }).addTo(dashboardMap);
-
-                        marker.bindPopup(`<strong>${r.region_name}</strong><br>Vulnerability: ${r.vulnerability_level} ${r.overall_score ? `(${r.overall_score}%)` : ''}`);
-                    });
-                })
-                .catch(err => console.error("Error loading vulnerability data:", err));
 
             setTimeout(() => {
                 dashboardMap.invalidateSize();
