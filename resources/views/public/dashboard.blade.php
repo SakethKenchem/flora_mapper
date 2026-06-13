@@ -206,6 +206,9 @@
                     <a href="{{ route('public.dashboard') }}" class="menu-link active">Dashboard</a>
                 </li>
                 <li class="menu-item">
+                    <a href="{{ route('account') }}" class="menu-link">My Account</a>
+                </li>
+                <li class="menu-item">
                     <a href="#" onclick="alert('Map filtering is active on the main map page!')" class="menu-link">Search Region</a>
                 </li>
                 <li class="menu-item">

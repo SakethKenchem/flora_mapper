@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -31,7 +32,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
-            'account_status' => 'Active',
+            'account_status' => 'Active', // Public users auto-approved
         ]);
 
         return redirect()->route('login')->with('success', 'Observer account created successfully. Please log in.');
@@ -48,8 +49,8 @@ class AuthController extends Controller
         $request->validate([
             'full_name' => 'required|string|max:120',
             'email' => 'required|email|unique:users,email',
-            'phone_number' => 'required|string|max:30', // Required for researchers
-            'institution' => 'required|string|max:150', // Required for researchers
+            'phone_number' => 'required|string|max:30',
+            'institution' => 'required|string|max:150',
             'password' => 'required|min:6|confirmed',
         ]);
 
@@ -60,10 +61,10 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
             'institution' => $request->institution,
-            'account_status' => 'Active',
+            'account_status' => 'Pending', // Researchers must wait for admin approval
         ]);
 
-        return redirect()->route('login')->with('success', 'Researcher account created successfully. Please log in.');
+        return redirect()->route('login')->with('success', 'Researcher registration submitted. Your account is pending review by the administrator.');
     }
 
     // Login & Logout
@@ -85,8 +86,18 @@ class AuthController extends Controller
 
             if ($user->account_status !== 'Active') {
                 Auth::logout();
+                
+                $message = 'Your account status is currently ' . $user->account_status . '.';
+                if ($user->account_status === 'Pending') {
+                    $message = 'Your account is pending review.';
+                } elseif ($user->account_status === 'Suspended') {
+                    $message = 'Your account has been suspended.';
+                } elseif ($user->account_status === 'Disabled') {
+                    $message = 'Your account has been disabled.';
+                }
+
                 return back()->withErrors([
-                    'email' => 'Your account is currently ' . $user->account_status . '.',
+                    'email' => $message,
                 ]);
             }
 
@@ -113,5 +124,55 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'Logged out successfully.');
+    }
+
+    // My Account settings
+    public function showAccount()
+    {
+        return view('auth.account');
+    }
+
+    public function updateAccount(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'full_name' => 'required|string|max:120',
+            'email' => 'required|email|unique:users,email,' . $user->user_id . ',user_id',
+            'phone_number' => 'nullable|string|max:30',
+            'password' => 'nullable|min:6|confirmed',
+        ]);
+
+        $user->full_name = $request->full_name;
+        $user->email = $request->email;
+        $user->phone_number = $request->phone_number;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Account profile settings updated successfully.');
+    }
+
+    // Admin user status management
+    public function updateUserStatus(Request $request, $userId)
+    {
+        $request->validate([
+            'status' => 'required|in:Active,Suspended,Disabled,Pending',
+        ]);
+
+        $user = User::findOrFail($userId);
+        
+        // Prevent admins from locking themselves out of their dashboard status
+        if ($user->user_id === Auth::user()->user_id) {
+            return back()->withErrors(['error' => 'You cannot change your own admin account status.']);
+        }
+
+        $user->account_status = $request->status;
+        $user->save();
+
+        return back()->with('success', "User account for '{$user->full_name}' updated to status: {$request->status}.");
     }
 }

@@ -261,11 +261,18 @@
         <div>
             <a href="{{ route('home') }}" class="sidebar-brand">FloraMapper</a>
 
-            <div class="menu-label">Datasets</div>
+            <div class="menu-label">Account</div>
             <ul class="menu-list">
                 <li class="menu-item">
                     <a href="{{ route('researcher.dashboard') }}" class="menu-link active">Dashboard</a>
                 </li>
+                <li class="menu-item">
+                    <a href="{{ route('account') }}" class="menu-link">My Account</a>
+                </li>
+            </ul>
+
+            <div class="menu-label">Datasets</div>
+            <ul class="menu-list">
                 <li class="menu-item">
                     <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate Data</a>
                 </li>

@@ -36,6 +36,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 // Role-protected Routes
 Route::middleware('auth')->group(function () {
     
+    // Shared "My Account" settings page
+    Route::get('/account', [AuthController::class, 'showAccount'])->name('account');
+    Route::post('/account', [AuthController::class, 'updateAccount'])->name('account.update');
+
     // General Public Area
     Route::middleware('role:GENERAL_PUBLIC,RESEARCHER,SYSTEM_ADMINISTRATOR')->group(function () {
         Route::get('/public/dashboard', function () {
@@ -46,13 +50,9 @@ Route::middleware('auth')->group(function () {
     // Researcher Area
     Route::middleware('role:RESEARCHER,SYSTEM_ADMINISTRATOR')->group(function () {
         Route::get('/researcher/dashboard', function () {
-            // Count total datasets
             $datasetsCount = \App\Models\Dataset::where('upload_status', 'Validated')->count();
-            // Count total climate records
             $climateCount = \App\Models\ClimateData::count();
-            // Count total vegetation records
             $vegCount = \App\Models\VegetationData::count();
-            // Count assessments
             $assessmentsCount = \App\Models\VulnerabilityAssessment::count();
 
             return view('researcher.dashboard', compact('datasetsCount', 'climateCount', 'vegCount', 'assessmentsCount'));
@@ -74,7 +74,16 @@ Route::middleware('auth')->group(function () {
     // System Administrator Area
     Route::middleware('role:SYSTEM_ADMINISTRATOR')->group(function () {
         Route::get('/admin/dashboard', function () {
-            return view('admin.dashboard');
+            $users = \App\Models\User::with('role')->get();
+            $totalUsers = $users->count();
+            $activeObservers = \App\Models\User::where('role_id', 1)->where('account_status', 'Active')->count();
+            $thresholdCount = \App\Models\VulnerabilityThreshold::count();
+            $backupsCount = 12;
+
+            return view('admin.dashboard', compact('users', 'totalUsers', 'activeObservers', 'thresholdCount', 'backupsCount'));
         })->name('admin.dashboard');
+
+        // User status manager (approve, reject, suspend, activate)
+        Route::post('/admin/users/{user_id}/status', [AuthController::class, 'updateUserStatus'])->name('admin.users.status');
     });
 });

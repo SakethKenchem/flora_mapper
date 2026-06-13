@@ -120,6 +120,18 @@
             font-size: 14px;
         }
 
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         .metrics-row {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -172,6 +184,21 @@
             padding-bottom: 8px;
         }
 
+        .panel-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+        }
+
+        .filter-select {
+            min-width: 180px;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #cccccc;
+            font-size: 13px;
+            background: white;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -205,6 +232,11 @@
             color: #721c24;
         }
 
+        .status-pending {
+            background: #fcf8e3;
+            color: #8a6d3b;
+        }
+
         .btn-action {
             padding: 4px 8px;
             border-radius: 3px;
@@ -213,6 +245,7 @@
             border: 1px solid #cccccc;
             background: white;
             cursor: pointer;
+            margin-right: 4px;
         }
 
         .btn-action:hover {
@@ -301,10 +334,7 @@
                     <a href="{{ route('admin.dashboard') }}" class="menu-link active">Dashboard</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" onclick="alert('Manage user accounts in the table below!')" class="menu-link">Manage Accounts</a>
-                </li>
-                <li class="menu-item">
-                    <a href="#" onclick="alert('Threshold configurator is preloaded in the right panel!')" class="menu-link">Configure Thresholds</a>
+                    <a href="{{ route('account') }}" class="menu-link">My Account</a>
                 </li>
             </ul>
 
@@ -333,33 +363,48 @@
         </div>
 
         @if (session('success'))
-            <div class="alert">
+            <div class="alert alert-success">
                 {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
             </div>
         @endif
 
         <div class="metrics-row">
             <div class="metric-card">
                 <span class="metric-label">Registered Users</span>
-                <span class="metric-value">3</span>
+                <span class="metric-value">{{ $totalUsers }}</span>
             </div>
             <div class="metric-card">
                 <span class="metric-label">Active Observers</span>
-                <span class="metric-value">1</span>
+                <span class="metric-value">{{ $activeObservers }}</span>
             </div>
             <div class="metric-card">
                 <span class="metric-label">Active Rule sets</span>
-                <span class="metric-value">1</span>
+                <span class="metric-value">{{ $thresholdCount }}</span>
             </div>
             <div class="metric-card">
                 <span class="metric-label">Backups Done</span>
-                <span class="metric-value">12</span>
+                <span class="metric-value">{{ $backupsCount }}</span>
             </div>
         </div>
 
         <div class="workspace-row">
             <div class="panel">
                 <div class="panel-title">User Account Audit & Settings</div>
+                <div class="panel-toolbar">
+                    <select id="roleFilter" class="filter-select" onchange="filterUsersTable()">
+                        <option value="all">All Roles</option>
+                        <option value="PUBLIC">Public</option>
+                        <option value="RESEARCHER">Researcher</option>
+                    </select>
+                </div>
                 <table>
                     <thead>
                         <tr>
@@ -371,33 +416,57 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr id="user-row-1">
-                            <td>System Administrator</td>
-                            <td>admin@floramapper.com</td>
-                            <td>ADMIN</td>
-                            <td><span class="status-badge" id="status-badge-1">Active</span></td>
-                            <td>
-                                <button class="btn-action" onclick="toggleUserStatus(1)">Suspend</button>
-                            </td>
-                        </tr>
-                        <tr id="user-row-2">
-                            <td>Dr. Jane Mwangi</td>
-                            <td>researcher@floramapper.com</td>
-                            <td>RESEARCHER</td>
-                            <td><span class="status-badge" id="status-badge-2">Active</span></td>
-                            <td>
-                                <button class="btn-action" onclick="toggleUserStatus(2)">Suspend</button>
-                            </td>
-                        </tr>
-                        <tr id="user-row-3">
-                            <td>John Doe</td>
-                            <td>public@floramapper.com</td>
-                            <td>PUBLIC</td>
-                            <td><span class="status-badge" id="status-badge-3">Active</span></td>
-                            <td>
-                                <button class="btn-action" onclick="toggleUserStatus(3)">Suspend</button>
-                            </td>
-                        </tr>
+                        @foreach ($users as $user)
+                            @php
+                                $normalizedRole = $user->role
+                                    ? str_replace(
+                                        ['SYSTEM_ADMINISTRATOR', 'GENERAL_PUBLIC'],
+                                        ['ADMIN', 'PUBLIC'],
+                                        $user->role->role_name
+                                    )
+                                    : 'N/A';
+                            @endphp
+                            <tr data-role="{{ $normalizedRole }}">
+                                <td><strong>{{ $user->full_name }}</strong></td>
+                                <td>{{ $user->email }}</td>
+                                <td>{{ $normalizedRole }}</td>
+                                <td>
+                                    <span class="status-badge @if($user->account_status === 'Suspended' || $user->account_status === 'Disabled') status-suspended @elseif($user->account_status === 'Pending') status-pending @endif">
+                                        {{ $user->account_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if ($user->user_id !== Auth::user()->user_id)
+                                        @if ($user->account_status === 'Pending')
+                                            <form action="{{ route('admin.users.status', $user->user_id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <input type="hidden" name="status" value="Active">
+                                                <button type="submit" class="btn-action" style="background:#d4edda; color:#155724; border-color:#c3e6cb;">Approve</button>
+                                            </form>
+                                            <form action="{{ route('admin.users.status', $user->user_id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <input type="hidden" name="status" value="Disabled">
+                                                <button type="submit" class="btn-action" style="background:#f8d7da; color:#721c24; border-color:#f5c6cb;">Reject</button>
+                                            </form>
+                                        @elseif ($user->account_status === 'Active')
+                                            <form action="{{ route('admin.users.status', $user->user_id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <input type="hidden" name="status" value="Suspended">
+                                                <button type="submit" class="btn-action">Suspend</button>
+                                            </form>
+                                        @else
+                                            <form action="{{ route('admin.users.status', $user->user_id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <input type="hidden" name="status" value="Active">
+                                                <button type="submit" class="btn-action" style="background:#d4edda; color:#155724; border-color:#c3e6cb;">Activate</button>
+                                            </form>
+                                        @endif
+                                    @else
+                                        <span style="font-size:11px; color:#666666;">Current Admin</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -442,20 +511,14 @@
     </div>
 
     <script>
-        function toggleUserStatus(id) {
-            const badge = document.getElementById(`status-badge-${id}`);
-            const btn = event.target;
-            if (badge.classList.contains('status-suspended')) {
-                badge.classList.remove('status-suspended');
-                badge.innerText = 'Active';
-                btn.innerText = 'Suspend';
-                alert(`User account #${id} is now active.`);
-            } else {
-                badge.classList.add('status-suspended');
-                badge.innerText = 'Suspended';
-                btn.innerText = 'Activate';
-                alert(`User account #${id} has been suspended.`);
-            }
+        function filterUsersTable() {
+            const filter = document.getElementById('roleFilter').value;
+            const rows = document.querySelectorAll('tbody tr[data-role]');
+
+            rows.forEach((row) => {
+                const role = row.getAttribute('data-role');
+                row.style.display = filter === 'all' || role === filter ? '' : 'none';
+            });
         }
 
         function saveThresholds() {
