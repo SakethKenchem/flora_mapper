@@ -496,4 +496,26 @@ class DatasetController extends Controller
             'assessments' => $assessments,
         ]);
     }
+
+    // Delete all uploaded datasets by the researcher
+    public function deleteAllUploads()
+    {
+        $user = Auth::user();
+        $datasets = Dataset::where('uploaded_by', $user->user_id)->get();
+        
+        foreach ($datasets as $dataset) {
+            // Delete physical files
+            if ($dataset->file_path && \Illuminate\Support\Facades\Storage::exists($dataset->file_path)) {
+                \Illuminate\Support\Facades\Storage::delete($dataset->file_path);
+            }
+            $dataset->delete();
+        }
+
+        // Reset researcher stats
+        $user->upload_count = 0;
+        $user->last_upload_date = null;
+        $user->save();
+
+        return redirect()->back()->with('success', 'All uploaded datasets and associated records have been successfully deleted.');
+    }
 }

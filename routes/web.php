@@ -87,6 +87,10 @@ Route::middleware('auth')->group(function () {
         // Analysis console
         Route::get('/researcher/analysis', [DatasetController::class, 'showAnalysis'])->name('researcher.analysis');
         Route::post('/researcher/analysis', [DatasetController::class, 'runAnalysis'])->name('researcher.analysis.submit');
+
+        //delete all uploaded datasets
+        Route::post('/researcher/datasets/delete', [DatasetController::class, 'deleteAllUploads'])->name('researcher.deleteUploads');
+        
     });
 
     // System Administrator Area
