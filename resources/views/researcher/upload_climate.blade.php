@@ -232,6 +232,9 @@
                 <li class="menu-item">
                     <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI Data</a>
                 </li>
+                <li class="menu-item">
+                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload Flora Data</a>
+                </li>
             </ul>
 
             <div class="menu-label">Assessments</div>
@@ -240,11 +243,25 @@
                     <a href="{{ route('researcher.analysis') }}" class="menu-link">Run Assessment</a>
                 </li>
             </ul>
+
+            <div class="menu-label">Flora & Reports</div>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <a href="{{ route('researcher.flora.create') }}" class="menu-link">Add Flora Record</a>
+                </li>
+                <li class="menu-item">
+                    <a href="{{ route('researcher.reports') }}" class="menu-link">Reports Manager</a>
+                </li>
+            </ul>
         </div>
 
         <div class="user-panel">
             <strong>{{ Auth::user()->full_name }}</strong><br>
             <span style="font-size: 11px; color: #a3e635;">{{ Auth::user()->institution ?? 'KEFRI Researcher' }}</span>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn-logout">Logout</button>
+            </form>
         </div>
     </div>
 

@@ -21,6 +21,22 @@ return new class extends Migration
             $table->string('phone_number')->nullable();
             $table->string('institution')->nullable();
             $table->string('account_status')->default('Active');
+            
+            // Draw.io Observer specific fields
+            $table->string('preferred_region', 100)->nullable();
+            $table->string('saved_filters', 255)->nullable();
+            $table->text('download_history')->nullable();
+
+            // Draw.io Researcher specific fields
+            $table->string('specialisation', 100)->nullable();
+            $table->integer('upload_count')->default(0);
+            $table->date('last_upload_date')->nullable();
+
+            // Draw.io Admin specific fields
+            $table->integer('admin_level')->default(1);
+            $table->string('permissions', 255)->nullable();
+            $table->timestamp('last_login')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
         });

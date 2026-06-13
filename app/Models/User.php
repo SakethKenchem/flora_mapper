@@ -24,6 +24,15 @@ class User extends Authenticatable
         'phone_number',
         'institution',
         'account_status',
+        'preferred_region',
+        'saved_filters',
+        'download_history',
+        'specialisation',
+        'upload_count',
+        'last_upload_date',
+        'admin_level',
+        'permissions',
+        'last_login',
     ];
 
     protected $hidden = [
@@ -41,6 +50,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_login' => 'datetime',
         ];
     }
 

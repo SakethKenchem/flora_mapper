@@ -173,6 +173,42 @@
                 <input type="text" id="status" class="form-control" value="{{ Auth::user()->account_status }}" disabled>
             </div>
 
+            @if (Auth::user()->isPublic())
+                <div class="form-group">
+                    <label for="preferred_region">Preferred Observation Region</label>
+                    <input type="text" id="preferred_region" name="preferred_region" class="form-control" placeholder="e.g. Mau Forest, Tana Delta..." value="{{ old('preferred_region', Auth::user()->preferred_region) }}">
+                </div>
+            @endif
+
+            @if (Auth::user()->isResearcher())
+                <div class="form-group">
+                    <label for="specialisation">Specialisation Area</label>
+                    <input type="text" id="specialisation" name="specialisation" class="form-control" placeholder="e.g. Mangrove Ecology, Botany..." value="{{ old('specialisation', Auth::user()->specialisation) }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="upload_count">Dataset Upload Count</label>
+                    <input type="text" id="upload_count" class="form-control" value="{{ Auth::user()->upload_count }}" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="last_upload_date">Last Upload Date</label>
+                    <input type="text" id="last_upload_date" class="form-control" value="{{ Auth::user()->last_upload_date ?? 'No uploads yet' }}" disabled>
+                </div>
+            @endif
+
+            @if (Auth::user()->isAdmin())
+                <div class="form-group">
+                    <label for="admin_level">Admin Level</label>
+                    <input type="text" id="admin_level" class="form-control" value="Level {{ Auth::user()->admin_level }}" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label for="last_login">Last Active Login</label>
+                    <input type="text" id="last_login" class="form-control" value="{{ Auth::user()->last_login ? Auth::user()->last_login->format('Y-m-d H:i:s') : 'N/A' }}" disabled>
+                </div>
+            @endif
+
             <hr style="border: 0; border-top: 1px solid #eeeeee; margin: 20px 0;">
             <p style="font-size: 12px; color: #666666; margin-bottom: 15px;">Leave password fields blank if you do not wish to change your current password.</p>
 

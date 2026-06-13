@@ -101,8 +101,10 @@ class AuthController extends Controller
                 ]);
             }
 
-            // Redirect to appropriate dashboard based on role
+            // Redirect to appropriate dashboard based on role and record admin login
             if ($user->isAdmin()) {
+                $user->last_login = now();
+                $user->save();
                 return redirect()->route('admin.dashboard')->with('success', 'Logged in as Administrator.');
             } elseif ($user->isResearcher()) {
                 return redirect()->route('researcher.dashboard')->with('success', 'Logged in as Researcher.');
@@ -136,16 +138,30 @@ class AuthController extends Controller
     {
         $user = Auth::user();
 
-        $request->validate([
+        $rules = [
             'full_name' => 'required|string|max:120',
             'email' => 'required|email|unique:users,email,' . $user->user_id . ',user_id',
             'phone_number' => 'nullable|string|max:30',
             'password' => 'nullable|min:6|confirmed',
-        ]);
+        ];
+
+        if ($user->isPublic()) {
+            $rules['preferred_region'] = 'nullable|string|max:100';
+        } elseif ($user->isResearcher()) {
+            $rules['specialisation'] = 'nullable|string|max:100';
+        }
+
+        $request->validate($rules);
 
         $user->full_name = $request->full_name;
         $user->email = $request->email;
         $user->phone_number = $request->phone_number;
+
+        if ($user->isPublic()) {
+            $user->preferred_region = $request->preferred_region;
+        } elseif ($user->isResearcher()) {
+            $user->specialisation = $request->specialisation;
+        }
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);

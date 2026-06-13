@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Vegetation Dataset - FloraMapper</title>
+    <title>Add Flora Record - FloraMapper</title>
     <style>
         body {
             margin: 0;
@@ -96,6 +96,9 @@
         }
 
         .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 1px solid #dcdcdc;
             padding-bottom: 15px;
             margin-bottom: 20px;
@@ -107,22 +110,25 @@
             font-size: 24px;
         }
 
-        .panel {
-            background: white;
-            border: 1px solid #dcdcdc;
-            border-radius: 6px;
-            padding: 20px;
-            max-width: 700px;
-            margin-bottom: 20px;
+        .alert {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
 
-        .panel-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #1e5631;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eeeeee;
-            padding-bottom: 8px;
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-container {
+            background: white;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            padding: 25px;
+            max-width: 600px;
         }
 
         .form-group {
@@ -131,23 +137,24 @@
 
         .form-group label {
             display: block;
-            font-weight: bold;
-            font-size: 13px;
             margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
         }
 
         .form-control {
             width: 100%;
-            padding: 8px;
-            border-radius: 4px;
+            padding: 8px 12px;
             border: 1px solid #cccccc;
+            border-radius: 4px;
             box-sizing: border-box;
-            font-size: 13px;
+            font-size: 14px;
+            background: white;
         }
 
         .form-control:focus {
-            border-color: #1e5631;
             outline: none;
+            border-color: #1e5631;
         }
 
         .btn-submit {
@@ -158,52 +165,11 @@
             border-radius: 4px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 14px;
         }
 
         .btn-submit:hover {
             background: #153e22;
-        }
-
-        .btn-cancel {
-            background: #ffffff;
-            color: #666666;
-            border: 1px solid #cccccc;
-            padding: 9px 15px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 13px;
-            display: inline-block;
-            margin-left: 10px;
-        }
-
-        .alert-danger {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            font-size: 13px;
-        }
-
-        .info-box {
-            background: #f9f9f9;
-            border: 1px solid #e5e5e5;
-            padding: 15px;
-            border-radius: 4px;
-            margin-top: 15px;
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        pre {
-            background: #eeeeee;
-            padding: 8px;
-            border-radius: 4px;
-            overflow-x: auto;
-            font-size: 11px;
-            margin: 5px 0 0 0;
         }
     </style>
 </head>
@@ -230,7 +196,7 @@
                     <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link active">Upload NDVI Data</a>
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI Data</a>
                 </li>
                 <li class="menu-item">
                     <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload Flora Data</a>
@@ -247,7 +213,7 @@
             <div class="menu-label">Flora & Reports</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.flora.create') }}" class="menu-link">Add Flora Record</a>
+                    <a href="{{ route('researcher.flora.create') }}" class="menu-link active">Add Flora Record</a>
                 </li>
                 <li class="menu-item">
                     <a href="{{ route('researcher.reports') }}" class="menu-link">Reports Manager</a>
@@ -257,7 +223,7 @@
 
         <div class="user-panel">
             <strong>{{ Auth::user()->full_name }}</strong><br>
-            <span style="font-size: 11px; color: #a3e635;">{{ Auth::user()->institution ?? 'KEFRI Researcher' }}</span>
+            <span style="font-size: 11px; color: #a3e635;">{{ Auth::user()->institution ?? 'Researcher' }}</span>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn-logout">Logout</button>
@@ -267,61 +233,70 @@
 
     <div class="main-content">
         <div class="header">
-            <h1>Upload Vegetation (NDVI) Dataset</h1>
+            <h1>Register Flora Species</h1>
+            <span style="font-size: 13px; background: #e2e8f0; padding: 4px 8px; border-radius: 4px;">Flora Registry</span>
         </div>
 
         @if ($errors->any())
-            <div class="alert alert-danger" style="max-width: 700px;">
+            <div class="alert alert-danger">
                 @foreach ($errors->all() as $error)
                     <div>{{ $error }}</div>
                 @endforeach
             </div>
         @endif
 
-        <div class="panel">
-            <div class="panel-title">Vegetation File Ingestion Form</div>
-
-            <form method="POST" action="{{ route('researcher.datasets.vegetation.upload.submit') }}" enctype="multipart/form-data">
+        <div class="form-container">
+            <form method="POST" action="{{ route('researcher.flora.store') }}">
                 @csrf
 
                 <div class="form-group">
-                    <label for="dataset_name">Dataset Title/Name</label>
-                    <input type="text" id="dataset_name" name="dataset_name" class="form-control" placeholder="e.g. MODIS NDVI Forest Cover 2026" value="{{ old('dataset_name') }}" required>
+                    <label for="scientific_name">Scientific Name (Required)</label>
+                    <input type="text" id="scientific_name" name="scientific_name" class="form-control" placeholder="e.g. Rhizophora mucronata" value="{{ old('scientific_name') }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="source_name">Data Source</label>
-                    <input type="text" id="source_name" name="source_name" class="form-control" placeholder="e.g. MODIS, Landsat, Sentinel" value="{{ old('source_name') }}" required>
+                    <label for="common_name">Common Name</label>
+                    <input type="text" id="common_name" name="common_name" class="form-control" placeholder="e.g. Red Mangrove" value="{{ old('common_name') }}">
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Description (Optional)</label>
-                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Brief details about index values, reference bounds, etc.">{{ old('description') }}</textarea>
+                    <label for="region_id">Ecosystem Region (Required)</label>
+                    <select id="region_id" name="region_id" class="form-control" required>
+                        <option value="">-- Select Region --</option>
+                        @foreach($regions as $region)
+                            <option value="{{ $region->region_id }}" {{ old('region_id') == $region->region_id ? 'selected' : '' }}>
+                                {{ $region->region_name }} ({{ $region->county }})
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="csv_file">Select CSV Dataset File</label>
-                    <input type="file" id="csv_file" name="csv_file" class="form-control" accept=".csv,.txt" required>
+                    <label for="species_type">Species Type</label>
+                    <input type="text" id="species_type" name="species_type" class="form-control" placeholder="e.g. Mangrove tree, Shrub" value="{{ old('species_type') }}">
                 </div>
 
-                <button type="submit" class="btn-submit">Import Dataset</button>
-                <a href="{{ route('researcher.dashboard') }}" class="btn-cancel">Cancel</a>
+                <div class="form-group">
+                    <label for="conservation_status">Conservation Status</label>
+                    <input type="text" id="conservation_status" name="conservation_status" class="form-control" placeholder="e.g. Vulnerable, Endangered, Least Concern" value="{{ old('conservation_status') }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="habitat_type">Habitat Type</label>
+                    <input type="text" id="habitat_type" name="habitat_type" class="form-control" placeholder="e.g. Saline muddy shores, Dry woodland" value="{{ old('habitat_type') }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="vulnerability_level">Ecosystem Vulnerability Level</label>
+                    <select id="vulnerability_level" name="vulnerability_level" class="form-control" required>
+                        <option value="Low" {{ old('vulnerability_level') == 'Low' ? 'selected' : '' }}>Low</option>
+                        <option value="Moderate" {{ old('vulnerability_level') == 'Moderate' ? 'selected' : '' }}>Moderate</option>
+                        <option value="High" {{ old('vulnerability_level') == 'High' ? 'selected' : '' }}>High</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-submit">Add Species to Registry</button>
             </form>
-
-            <div class="info-box">
-                <strong>CSV File Format Requirements:</strong>
-                <p>The first line of the file must be the header. Required columns are case-insensitive:</p>
-                <ul>
-                    <li><code>region_name</code>: Must match one of our seeded regions exactly (e.g. <strong>Mau Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>, <strong>Tsavo East</strong>).</li>
-                    <li><code>record_date</code>: In YYYY-MM-DD format.</li>
-                    <li><code>ndvi_value</code>: Normalized Difference Vegetation Index (typically between 0.000 and 1.000).</li>
-                    <li>Optional columns: <code>vegetation_cover_percent</code>, <code>vegetation_condition</code>, <code>data_source</code>.</li>
-                </ul>
-                <strong>Example Format:</strong>
-                <pre>region_name,record_date,ndvi_value,vegetation_cover_percent,vegetation_condition,data_source
-Mau Forest,2026-01-01,0.721,78.50,Healthy,Sentinel
-Tana Delta,2026-01-01,0.482,52.10,Moderate,MODIS</pre>
-            </div>
         </div>
     </div>
 

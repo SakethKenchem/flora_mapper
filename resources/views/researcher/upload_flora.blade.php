@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Vegetation Dataset - FloraMapper</title>
+    <title>Upload Flora Dataset - FloraMapper</title>
     <style>
         body {
             margin: 0;
@@ -230,10 +230,10 @@
                     <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link active">Upload NDVI Data</a>
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload Flora Data</a>
+                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link active">Upload Flora Data</a>
                 </li>
             </ul>
 
@@ -267,7 +267,7 @@
 
     <div class="main-content">
         <div class="header">
-            <h1>Upload Vegetation (NDVI) Dataset</h1>
+            <h1>Upload Flora Dataset</h1>
         </div>
 
         @if ($errors->any())
@@ -279,24 +279,24 @@
         @endif
 
         <div class="panel">
-            <div class="panel-title">Vegetation File Ingestion Form</div>
+            <div class="panel-title">Flora File Ingestion Form</div>
 
-            <form method="POST" action="{{ route('researcher.datasets.vegetation.upload.submit') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('researcher.datasets.flora.upload.submit') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group">
                     <label for="dataset_name">Dataset Title/Name</label>
-                    <input type="text" id="dataset_name" name="dataset_name" class="form-control" placeholder="e.g. MODIS NDVI Forest Cover 2026" value="{{ old('dataset_name') }}" required>
+                    <input type="text" id="dataset_name" name="dataset_name" class="form-control" placeholder="e.g. Flora Species Distribution 2026" value="{{ old('dataset_name') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="source_name">Data Source</label>
-                    <input type="text" id="source_name" name="source_name" class="form-control" placeholder="e.g. MODIS, Landsat, Sentinel" value="{{ old('source_name') }}" required>
+                    <input type="text" id="source_name" name="source_name" class="form-control" placeholder="e.g. KEFRI, GBIF, Kenya Wildlife Service" value="{{ old('source_name') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Description (Optional)</label>
-                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Brief details about index values, reference bounds, etc.">{{ old('description') }}</textarea>
+                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Brief details about the flora data survey, etc.">{{ old('description') }}</textarea>
                 </div>
 
                 <div class="form-group">
@@ -309,18 +309,22 @@
             </form>
 
             <div class="info-box">
+                <div style="margin-bottom: 10px;">
+                    <a href="{{ asset('flora_sample.csv') }}" download style="color: #1e5631; font-weight: bold; text-decoration: underline;">
+                        Download Sample Flora CSV File
+                    </a>
+                </div>
                 <strong>CSV File Format Requirements:</strong>
                 <p>The first line of the file must be the header. Required columns are case-insensitive:</p>
                 <ul>
-                    <li><code>region_name</code>: Must match one of our seeded regions exactly (e.g. <strong>Mau Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>, <strong>Tsavo East</strong>).</li>
-                    <li><code>record_date</code>: In YYYY-MM-DD format.</li>
-                    <li><code>ndvi_value</code>: Normalized Difference Vegetation Index (typically between 0.000 and 1.000).</li>
-                    <li>Optional columns: <code>vegetation_cover_percent</code>, <code>vegetation_condition</code>, <code>data_source</code>.</li>
+                    <li><code>scientific_name</code>: The scientific classification of the species (Required).</li>
+                    <li><code>region_name</code>: Optional. If it matches one of our regions exactly (e.g. <strong>Mau Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>, <strong>Tsavo East</strong>), the record will be linked to that region.</li>
+                    <li>Optional columns: <code>common_name</code>, <code>species_type</code>, <code>conservation_status</code>, <code>habitat_type</code>, <code>vulnerability_level</code>.</li>
                 </ul>
                 <strong>Example Format:</strong>
-                <pre>region_name,record_date,ndvi_value,vegetation_cover_percent,vegetation_condition,data_source
-Mau Forest,2026-01-01,0.721,78.50,Healthy,Sentinel
-Tana Delta,2026-01-01,0.482,52.10,Moderate,MODIS</pre>
+                <pre>region_name,scientific_name,common_name,species_type,conservation_status,habitat_type,vulnerability_level
+Mau Forest,Ficus sycomorus,Sycamore Fig,Tree,Least Concern,Montane Forest,Low
+Tana Delta,Rhizophora mucronata,Red Mangrove,Mangrove,Near Threatened,Estuary/Mangrove,High</pre>
             </div>
         </div>
     </div>

@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('Password123'),
             'phone_number' => '+254712345678',
             'account_status' => 'Active',
+            'admin_level' => 3,
+            'permissions' => 'All privileges',
         ]);
 
         // Seed Researcher
@@ -35,6 +37,7 @@ class DatabaseSeeder extends Seeder
             'phone_number' => '+254723456789',
             'institution' => 'Kenya Forestry Research Institute (KEFRI)',
             'account_status' => 'Active',
+            'specialisation' => 'Forest Ecology',
         ]);
 
         // Seed General Public User
@@ -45,10 +48,15 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('Password123'),
             'phone_number' => '+254734567890',
             'account_status' => 'Active',
+            'preferred_region' => 'Mau Forest',
         ]);
 
         // Seed regions and default rules
         $this->call(RegionSeeder::class);
         $this->call(ThresholdSeeder::class);
+
+        // Seed Flora registry and observation reports
+        $this->call(FloraSeeder::class);
+        $this->call(ObservationReportSeeder::class);
     }
 }

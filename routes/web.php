@@ -15,6 +15,7 @@ Route::get('/map', function () {
 
 // Public API for map data loading
 Route::get('/api/vulnerability-data', [DatasetController::class, 'getVulnerabilityData'])->name('api.vulnerability_data');
+Route::get('/api/regions/{region_id}/details', [DatasetController::class, 'getRegionDetails'])->name('api.region_details');
 
 // Authentication routes (Guest only)
 Route::middleware('guest')->group(function () {
@@ -53,9 +54,11 @@ Route::middleware('auth')->group(function () {
             $datasetsCount = \App\Models\Dataset::where('upload_status', 'Validated')->count();
             $climateCount = \App\Models\ClimateData::count();
             $vegCount = \App\Models\VegetationData::count();
+            $floraCount = \App\Models\Flora::count();
             $assessmentsCount = \App\Models\VulnerabilityAssessment::count();
+            $observations = \App\Models\ObservationReport::with(['observer', 'reviewer'])->latest()->get();
 
-            return view('researcher.dashboard', compact('datasetsCount', 'climateCount', 'vegCount', 'assessmentsCount'));
+            return view('researcher.dashboard', compact('datasetsCount', 'climateCount', 'vegCount', 'floraCount', 'assessmentsCount', 'observations'));
         })->name('researcher.dashboard');
 
         // Climate Dataset Ingestion
@@ -65,6 +68,21 @@ Route::middleware('auth')->group(function () {
         // Vegetation Dataset Ingestion
         Route::get('/researcher/datasets/vegetation/upload', [DatasetController::class, 'showUploadVegetation'])->name('researcher.datasets.vegetation.upload');
         Route::post('/researcher/datasets/vegetation/upload', [DatasetController::class, 'uploadVegetation'])->name('researcher.datasets.vegetation.upload.submit');
+
+        // Flora Dataset Ingestion
+        Route::get('/researcher/datasets/flora/upload', [DatasetController::class, 'showUploadFlora'])->name('researcher.datasets.flora.upload');
+        Route::post('/researcher/datasets/flora/upload', [DatasetController::class, 'uploadFlora'])->name('researcher.datasets.flora.upload.submit');
+
+        // Flora Registry Actions
+        Route::get('/researcher/flora/new', [DatasetController::class, 'showCreateFlora'])->name('researcher.flora.create');
+        Route::post('/researcher/flora/new', [DatasetController::class, 'createFlora'])->name('researcher.flora.store');
+
+        // Observation Review Action
+        Route::post('/researcher/observations/{id}/review', [DatasetController::class, 'updateObservationStatus'])->name('researcher.observations.review');
+
+        // Reports Management Actions
+        Route::get('/researcher/reports', [DatasetController::class, 'showReports'])->name('researcher.reports');
+        Route::post('/researcher/reports', [DatasetController::class, 'createReport'])->name('researcher.reports.store');
 
         // Analysis console
         Route::get('/researcher/analysis', [DatasetController::class, 'showAnalysis'])->name('researcher.analysis');

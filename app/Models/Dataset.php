@@ -37,4 +37,9 @@ class Dataset extends Model
     {
         return $this->hasMany(VegetationData::class, 'dataset_id', 'dataset_id');
     }
+
+    public function floraData()
+    {
+        return $this->hasMany(Flora::class, 'dataset_id', 'dataset_id');
+    }
 }

@@ -9,6 +9,9 @@ use App\Models\ClimateData;
 use App\Models\VegetationData;
 use App\Models\VulnerabilityThreshold;
 use App\Models\VulnerabilityAssessment;
+use App\Models\Flora;
+use App\Models\ObservationReport;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -87,6 +90,11 @@ class DatasetController extends Controller
         }
         fclose($fileHandle);
 
+        $user = Auth::user();
+        $user->increment('upload_count');
+        $user->last_upload_date = now()->toDateString();
+        $user->save();
+
         return redirect()->route('researcher.dashboard')->with('success', "Climate dataset uploaded successfully. Ingested {$rowCount} records.");
     }
 
@@ -160,7 +168,96 @@ class DatasetController extends Controller
         }
         fclose($fileHandle);
 
+        $user = Auth::user();
+        $user->increment('upload_count');
+        $user->last_upload_date = now()->toDateString();
+        $user->save();
+
         return redirect()->route('researcher.dashboard')->with('success', "Vegetation dataset uploaded successfully. Ingested {$rowCount} records.");
+    }
+
+    // Upload Flora
+    public function showUploadFlora()
+    {
+        return view('researcher.upload_flora');
+    }
+
+    public function uploadFlora(Request $request)
+    {
+        $request->validate([
+            'dataset_name' => 'required|string|max:150',
+            'source_name' => 'required|string|max:150',
+            'description' => 'nullable|string',
+            'csv_file' => 'required|file|mimes:csv,txt|max:4096',
+        ]);
+
+        $file = $request->file('csv_file');
+        $filePath = $file->store('datasets/flora');
+
+        // Create Dataset Metadata
+        $dataset = Dataset::create([
+            'uploaded_by' => Auth::user()->user_id,
+            'dataset_name' => $request->dataset_name,
+            'dataset_type' => 'Flora',
+            'source_name' => $request->source_name,
+            'file_name' => $file->getClientOriginalName(),
+            'file_path' => $filePath,
+            'description' => $request->description,
+            'upload_status' => 'Validated',
+        ]);
+
+        // Parse CSV
+        $path = storage_path('app/private/' . $filePath);
+        if (!file_exists($path)) {
+            $path = storage_path('app/' . $filePath);
+        }
+
+        $fileHandle = fopen($path, 'r');
+        $headers = fgetcsv($fileHandle);
+        
+        $headers = array_map(function($h) {
+            return trim(strtolower(str_replace(['"', "'", "\xef\xbb\xbf"], '', $h)));
+        }, $headers);
+
+        $rowCount = 0;
+        while (($row = fgetcsv($fileHandle)) !== false) {
+            if (count($headers) !== count($row)) {
+                continue;
+            }
+
+            $data = array_combine($headers, $row);
+
+            $scientificName = isset($data['scientific_name']) ? trim($data['scientific_name']) : null;
+            if (!$scientificName) {
+                continue;
+            }
+
+            $regionName = isset($data['region_name']) ? trim($data['region_name']) : null;
+            $region = null;
+            if ($regionName) {
+                $region = Region::where('region_name', $regionName)->first();
+            }
+
+            Flora::create([
+                'dataset_id' => $dataset->dataset_id,
+                'region_id' => $region ? $region->region_id : null,
+                'scientific_name' => $scientificName,
+                'common_name' => isset($data['common_name']) ? trim($data['common_name']) : null,
+                'species_type' => isset($data['species_type']) ? trim($data['species_type']) : null,
+                'conservation_status' => isset($data['conservation_status']) ? trim($data['conservation_status']) : null,
+                'habitat_type' => isset($data['habitat_type']) ? trim($data['habitat_type']) : null,
+                'vulnerability_level' => isset($data['vulnerability_level']) ? trim($data['vulnerability_level']) : null,
+            ]);
+            $rowCount++;
+        }
+        fclose($fileHandle);
+
+        $user = Auth::user();
+        $user->increment('upload_count');
+        $user->last_upload_date = now()->toDateString();
+        $user->save();
+
+        return redirect()->route('researcher.dashboard')->with('success', "Flora dataset uploaded successfully. Ingested {$rowCount} records.");
     }
 
     // Vulnerability Analysis Console
@@ -264,6 +361,7 @@ class DatasetController extends Controller
                 ->first();
 
             $data[] = [
+                'region_id' => $region->region_id,
                 'region_name' => $region->region_name,
                 'latitude' => floatval($region->latitude),
                 'longitude' => floatval($region->longitude),
@@ -276,5 +374,126 @@ class DatasetController extends Controller
         }
 
         return response()->json($data);
+    }
+
+    // Flora Registry Actions
+    public function showCreateFlora()
+    {
+        $regions = Region::all();
+        return view('researcher.create_flora', compact('regions'));
+    }
+
+    public function createFlora(Request $request)
+    {
+        $request->validate([
+            'scientific_name' => 'required|string|max:150|unique:flora,scientific_name',
+            'common_name' => 'nullable|string|max:150',
+            'region_id' => 'required|exists:regions,region_id',
+            'species_type' => 'nullable|string|max:100',
+            'conservation_status' => 'nullable|string|max:50',
+            'habitat_type' => 'nullable|string|max:100',
+            'vulnerability_level' => 'required|in:Low,Moderate,High',
+        ]);
+
+        Flora::create([
+            'scientific_name' => $request->scientific_name,
+            'common_name' => $request->common_name,
+            'region_id' => $request->region_id,
+            'species_type' => $request->species_type,
+            'conservation_status' => $request->conservation_status,
+            'habitat_type' => $request->habitat_type,
+            'vulnerability_level' => $request->vulnerability_level,
+        ]);
+
+        return redirect()->route('researcher.dashboard')->with('success', "Flora species '{$request->scientific_name}' has been successfully added to the registry.");
+    }
+
+    // Review Observation Status
+    public function updateObservationStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:Approved,Rejected',
+            'review_comment' => 'nullable|string|max:1000',
+        ]);
+
+        $observation = ObservationReport::findOrFail($id);
+        $observation->status = $request->status;
+        $observation->review_comment = $request->review_comment;
+        $observation->researcher_id = Auth::user()->user_id;
+        $observation->save();
+
+        return redirect()->route('researcher.dashboard')->with('success', "Observation report #{$id} has been {$request->status}.");
+    }
+
+    // Reports Actions
+    public function showReports()
+    {
+        $reports = Report::with('creator')->latest()->get();
+        $assessments = VulnerabilityAssessment::with(['region', 'creator'])->latest()->get();
+        return view('researcher.reports', compact('reports', 'assessments'));
+    }
+
+    public function createReport(Request $request)
+    {
+        $request->validate([
+            'report_title' => 'required|string|max:150',
+            'report_type' => 'required|string|max:100',
+            'assessment_id' => 'nullable|exists:vulnerability_assessments,assessment_id',
+            'notes' => 'required|string',
+        ]);
+
+        $content = $request->notes;
+        if ($request->filled('assessment_id')) {
+            $assessment = VulnerabilityAssessment::with('region')->find($request->assessment_id);
+            $content .= "\n\n--- Associated Assessment Details ---\n";
+            $content .= "Region: " . $assessment->region->region_name . "\n";
+            $content .= "Overall Vulnerability Score: " . $assessment->overall_score . "%\n";
+            $content .= "Level: " . $assessment->vulnerability_level . "\n";
+            $content .= "Interpretation: " . $assessment->interpretation . "\n";
+        }
+
+        Report::create([
+            'generated_by' => Auth::user()->user_id,
+            'report_title' => $request->report_title,
+            'report_type' => $request->report_type,
+            'content' => $content,
+        ]);
+
+        return redirect()->route('researcher.reports')->with('success', 'Researcher report compiled and saved successfully.');
+    }
+
+    // Fetch detailed region profile for map popup modal click
+    public function getRegionDetails($regionId)
+    {
+        $region = Region::findOrFail($regionId);
+
+        // Get latest climate records
+        $climate = ClimateData::where('region_id', $regionId)
+            ->latest('record_date')
+            ->take(5)
+            ->get();
+
+        // Get latest vegetation records
+        $vegetation = VegetationData::where('region_id', $regionId)
+            ->latest('record_date')
+            ->take(5)
+            ->get();
+
+        // Get flora species in this region
+        $flora = Flora::where('region_id', $regionId)->get();
+
+        // Get assessments history
+        $assessments = VulnerabilityAssessment::where('region_id', $regionId)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return response()->json([
+            'region' => $region,
+            'climate' => $climate,
+            'vegetation' => $vegetation,
+            'flora' => $flora,
+            'assessments' => $assessments,
+        ]);
     }
 }

@@ -35,4 +35,9 @@ class Region extends Model
     {
         return $this->hasMany(VulnerabilityAssessment::class, 'region_id', 'region_id');
     }
+
+    public function floraData()
+    {
+        return $this->hasMany(Flora::class, 'region_id', 'region_id');
+    }
 }
