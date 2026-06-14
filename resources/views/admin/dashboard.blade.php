@@ -311,6 +311,9 @@
                     <a href="{{ route('admin.dashboard') }}" class="menu-link active">Dashboard</a>
                 </li>
                 <li class="menu-item">
+                    <a href="{{ route('map') }}" class="menu-link">Map</a>
+                </li>
+                <li class="menu-item">
                     <a href="{{ route('account') }}" class="menu-link">My Account</a>
                 </li>
             </ul>
