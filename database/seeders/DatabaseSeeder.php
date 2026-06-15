@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('Password123'),
             'phone_number' => '+254712345678',
             'account_status' => 'Active',
-            'admin_level' => 3,
             'permissions' => 'All privileges',
         ]);
 

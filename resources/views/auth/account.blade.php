@@ -139,7 +139,7 @@
         @endif
 
         <form method="POST" action="{{ route('account.update') }}">
-            researcher.deleteUploads
+            @csrf
 
             <div class="form-group">
                 <label for="full_name">Full Name</label>
@@ -198,10 +198,6 @@
             @endif
 
             @if (Auth::user()->isAdmin())
-                <div class="form-group">
-                    <label for="admin_level">Admin Level</label>
-                    <input type="text" id="admin_level" class="form-control" value="Level {{ Auth::user()->admin_level }}" disabled>
-                </div>
 
                 <div class="form-group">
                     <label for="last_login">Last Active Login</label>

@@ -216,7 +216,7 @@
     </section>
 
     <footer>
-        <p>&copy; 2026 Flora Vulnerability Mapping System. All rights reserved.</p>
+        <p>&copy; 2026 Flora Vulnerability Mapping System.</p>
     </footer>
 
 </body>

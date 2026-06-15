@@ -30,7 +30,6 @@ class User extends Authenticatable
         'specialisation',
         'upload_count',
         'last_upload_date',
-        'admin_level',
         'permissions',
         'last_login',
     ];

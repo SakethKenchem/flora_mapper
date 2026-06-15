@@ -33,7 +33,6 @@ return new class extends Migration
             $table->date('last_upload_date')->nullable();
 
             // Draw.io Admin specific fields
-            $table->integer('admin_level')->default(1);
             $table->string('permissions', 255)->nullable();
             $table->timestamp('last_login')->nullable();
 
