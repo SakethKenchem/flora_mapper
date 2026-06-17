@@ -277,8 +277,7 @@
             <div class="menu-label">Datasets</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Upload
-                        Climate Data</a>
+                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link"">Upload Climate Data</a>
                 </li>
                 <li class="menu-item">
                     <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Upload

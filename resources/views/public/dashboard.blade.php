@@ -209,7 +209,7 @@
                     <a href="{{ route('account') }}" class="menu-link">My Account</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" onclick="alert('Map filtering is active on the main map page!')" class="menu-link">Search Region</a>
+                    <a href="#" onclick="alert('Search functionality coming soon!')" class="menu-link">Search Region</a>
                 </li>
                 <li class="menu-item">
                     <a href="#" onclick="alert('Observation submission form is under development!')" class="menu-link">Submit Observation</a>
@@ -284,7 +284,7 @@
                 return;
             }
 
-            const dashboardMap = L.map(mapElement).setView([0.0236, 37.9062], 6);
+            const dashboardMap = L.map(mapElement).setView([0.0236, 37.9062], 5.5);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,

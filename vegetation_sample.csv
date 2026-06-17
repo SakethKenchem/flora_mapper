@@ -1,5 +1,0 @@
-region_name,record_date,ndvi_value,vegetation_cover_percent,vegetation_condition,data_source
-Mau Forest,2026-06-01,0.65,70.0,Healthy,MODIS
-Tana Delta,2026-06-01,0.38,40.0,Declining,Sentinel
-Mt. Kenya Region,2026-06-01,0.72,80.0,Healthy,MODIS
-Tsavo East,2026-06-01,0.22,15.0,Poor,Landsat

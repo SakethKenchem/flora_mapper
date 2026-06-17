@@ -163,10 +163,10 @@
                 </div>
             @endif
 
-            <div class="form-group">
+            {{-- <div class="form-group">
                 <label for="role">Account Role</label>
                 <input type="text" id="role" class="form-control" value="{{ Auth::user()->role ? Auth::user()->role->role_name : 'N/A' }}" disabled>
-            </div>
+            </div> --}}
 
             <div class="form-group">
                 <label for="status">Account Status</label>

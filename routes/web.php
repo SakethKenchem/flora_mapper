@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DatasetController;
+use App\Models\Dataset;
 use Illuminate\Support\Facades\Route;
 
 // Guest / Public Routes
@@ -56,6 +58,10 @@ Route::middleware('auth')->group(function () {
 
             return view('researcher.dashboard', compact('datasetsCount', 'climateCount', 'vegCount', 'floraCount', 'assessmentsCount', 'observations'));
         })->name('researcher.dashboard');
+
+        // Climate Dataset Ingestion
+        Route::get('/researcher/datasets/climate/upload', [DatasetController::class, 'showUploadClimate'])->name('researcher.datasets.climate.upload');
+        Route::post('/researcher/datasets/climate/upload', [DatasetController::class, 'uploadClimate'])->name('researcher.datasets.climate.upload.submit');
     });
 
     // System Administrator Area
