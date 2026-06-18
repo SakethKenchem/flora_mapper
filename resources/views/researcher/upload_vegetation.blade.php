@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Climate Dataset - FloraMapper</title>
+    <title>Upload Vegetation Dataset - FloraMapper</title>
     <style>
         body {
             margin: 0;
@@ -227,10 +227,10 @@
             <div class="menu-label">Datasets</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link active">Upload Climate Data</a>
+                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI Data</a>
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link active">Upload NDVI Data</a>
                 </li>
                 <li class="menu-item">
                     <a href="#" class="menu-link">Upload Flora Data</a>
@@ -267,7 +267,7 @@
 
     <div class="main-content">
         <div class="header">
-            <h1>Upload Climate Dataset</h1>
+            <h1>Upload Vegetation (NDVI) Dataset</h1>
         </div>
 
         @if ($errors->any())
@@ -279,24 +279,24 @@
         @endif
 
         <div class="panel">
-            <div class="panel-title">Climate File Ingestion Form</div>
+            <div class="panel-title">Vegetation File Ingestion Form</div>
 
-            <form method="POST" action="{{ route('researcher.datasets.climate.upload.submit') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('researcher.datasets.vegetation.upload.submit') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group">
                     <label for="dataset_name">Dataset Title/Name</label>
-                    <input type="text" id="dataset_name" name="dataset_name" class="form-control" placeholder="e.g. Kenya Meteorological Station Data 2026" value="{{ old('dataset_name') }}" required>
+                    <input type="text" id="dataset_name" name="dataset_name" class="form-control" placeholder="e.g. MODIS NDVI Forest Cover 2026" value="{{ old('dataset_name') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="source_name">Data Source</label>
-                    <input type="text" id="source_name" name="source_name" class="form-control" placeholder="e.g. KMD, WorldClim" value="{{ old('source_name') }}" required>
+                    <input type="text" id="source_name" name="source_name" class="form-control" placeholder="e.g. MODIS, Landsat, Sentinel" value="{{ old('source_name') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Description (Optional)</label>
-                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Brief summary of dates covered, parameters, etc.">{{ old('description') }}</textarea>
+                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Brief details about index values, reference bounds, etc.">{{ old('description') }}</textarea>
                 </div>
 
                 <div class="form-group">
@@ -314,14 +314,13 @@
                 <ul>
                     <li><code>region_name</code>: Must match one of our seeded regions exactly (e.g. <strong>Mau Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>, <strong>Tsavo East</strong>).</li>
                     <li><code>record_date</code>: In YYYY-MM-DD format.</li>
-                    <li><code>temperature_celsius</code>: Temperature value (decimal).</li>
-                    <li><code>rainfall_mm</code>: Rainfall amount (decimal).</li>
-                    <li>Optional columns: <code>humidity_percent</code>, <code>drought_index</code>, <code>flood_risk_level</code>.</li>
+                    <li><code>ndvi_value</code>: Normalized Difference Vegetation Index (typically between 0.000 and 1.000).</li>
+                    <li>Optional columns: <code>vegetation_cover_percent</code>, <code>vegetation_condition</code>, <code>data_source</code>.</li>
                 </ul>
                 <strong>Example Format:</strong>
-                <pre>region_name,record_date,temperature_celsius,rainfall_mm,humidity_percent,drought_index,flood_risk_level
-Mau Forest,2026-01-01,21.40,132.50,78.00,0.25,Low
-Tana Delta,2026-01-01,28.60,61.30,69.10,0.65,High</pre>
+                <pre>region_name,record_date,ndvi_value,vegetation_cover_percent,vegetation_condition,data_source
+Mau Forest,2026-01-01,0.721,78.50,Healthy,Sentinel
+Tana Delta,2026-01-01,0.482,52.10,Moderate,MODIS</pre>
             </div>
         </div>
     </div>

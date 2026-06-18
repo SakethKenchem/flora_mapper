@@ -62,6 +62,10 @@ Route::middleware('auth')->group(function () {
         // Climate Dataset Ingestion
         Route::get('/researcher/datasets/climate/upload', [DatasetController::class, 'showUploadClimate'])->name('researcher.datasets.climate.upload');
         Route::post('/researcher/datasets/climate/upload', [DatasetController::class, 'uploadClimate'])->name('researcher.datasets.climate.upload.submit');
+
+        // Vegetation Dataset Ingestion
+        Route::get('/researcher/datasets/vegetation/upload', [DatasetController::class, 'showUploadVegetation'])->name('researcher.datasets.vegetation.upload');
+        Route::post('/researcher/datasets/vegetation/upload', [DatasetController::class, 'uploadVegetation'])->name('researcher.datasets.vegetation.upload.submit');
     });
 
     // System Administrator Area

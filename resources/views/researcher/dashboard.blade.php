@@ -280,7 +280,7 @@
                     <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link"">Upload Climate Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Upload
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link"">Upload
                         NDVI
                         Data</a>
                 </li>
