@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DatasetController;
+use App\Models\Dataset;
+use App\Models\Flora;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 // Guest / Public Routes
@@ -11,6 +15,9 @@ Route::get('/', function () {
 Route::get('/map', function () {
     return view('public.map');
 })->name('map');
+
+Route::get('/api/vulnerability-data', [DatasetController::class, 'getVulnerabilityData'])->name('api.vulnerability_data');
+Route::get('/api/regions/{region_id}/details', [DatasetController::class, 'getRegionDetails'])->name('api.region_details');
 
 
 // Authentication routes (Guest only)
@@ -56,6 +63,30 @@ Route::middleware('auth')->group(function () {
 
             return view('researcher.dashboard', compact('datasetsCount', 'climateCount', 'vegCount', 'floraCount', 'assessmentsCount', 'observations'));
         })->name('researcher.dashboard');
+
+        // Climate Dataset Ingestion
+        Route::get('/researcher/datasets/climate/upload', [DatasetController::class, 'showUploadClimate'])->name('researcher.datasets.climate.upload');
+        Route::post('/researcher/datasets/climate/upload', [DatasetController::class, 'uploadClimate'])->name('researcher.datasets.climate.upload.submit');
+
+        // Vegetation Dataset Ingestion
+        Route::get('/researcher/datasets/vegetation/upload', [DatasetController::class, 'showUploadVegetation'])->name('researcher.datasets.vegetation.upload');
+        Route::post('/researcher/datasets/vegetation/upload', [DatasetController::class, 'uploadVegetation'])->name('researcher.datasets.vegetation.upload.submit');
+
+        // Flora Dataset Ingestion
+        Route::get('/researcher/datasets/flora/upload', [DatasetController::class, 'showUploadFlora'])->name('researcher.datasets.flora.upload');
+        Route::post('/researcher/datasets/flora/upload', [DatasetController::class, 'uploadFlora'])->name('researcher.datasets.flora.upload.submit');
+
+        // Flora Registry Actions
+        Route::get('/researcher/flora/new', [DatasetController::class, 'showCreateFlora'])->name('researcher.flora.create');
+        Route::post('/researcher/flora/new', [DatasetController::class, 'createFlora'])->name('researcher.flora.store');
+
+
+        // Analysis console
+        Route::get('/researcher/analysis', [DatasetController::class, 'showAnalysis'])->name('researcher.analysis');
+        Route::post('/researcher/analysis', [DatasetController::class, 'runAnalysis'])->name('researcher.analysis.submit');
+
+        //delete all uploaded datasets
+        Route::post('/researcher/datasets/delete', [DatasetController::class, 'deleteAllUploads'])->name('researcher.deleteUploads');
     });
 
     // System Administrator Area

@@ -191,7 +191,7 @@
             const kenyaCenter = [0.0236, 37.9062];
             const map = L.map(mapElement, {
                 zoomControl: true
-            }).setView(kenyaCenter, 6);
+            }).setView(kenyaCenter, 5.5);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,

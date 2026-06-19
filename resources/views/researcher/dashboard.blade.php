@@ -277,37 +277,32 @@
             <div class="menu-label">Datasets</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Upload
-                        Climate Data</a>
-                </li>
-                <li class="menu-item">
-                    <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Upload
-                        NDVI
+                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate
                         Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Upload
-                        Flora Data</a>
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI
+                        Data</a>
+                </li>
+                <li class="menu-item">
+                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload Flora Data</a>
                 </li>
             </ul>
 
             <div class="menu-label">Assessments</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Run
-                        Assessment</a>
+                    <a href="{{ route('researcher.analysis') }}" class="menu-link">Run Assessment</a>
                 </li>
             </ul>
 
             <div class="menu-label">Flora & Reports</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Add
-                        Flora Record</a>
+                    <a href="{{ route('researcher.flora.create') }}" class="menu-link">Add Flora Record</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link"
-                        onclick="alert('Page under construction'); return false;">Reports Manager</a>
+                    <a href="#" class="menu-link">Reports Manager</a>
                 </li>
             </ul>
         </div>
@@ -379,6 +374,68 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($observations as $obs)
+                                <tr>
+                                    <td>
+                                        <strong>{{ $obs->flora_name }}</strong>
+                                        @if ($obs->description)
+                                            <div style="font-size: 11px; color: #666666; margin-top: 2px;">
+                                                {{ $obs->description }}</div>
+                                        @endif
+                                    </td>
+                                    <td>{{ $obs->location }}</td>
+                                    <td>{{ $obs->observer ? $obs->observer->full_name : 'Public Observer' }}</td>
+                                    <td>{{ $obs->date_observed ? $obs->date_observed->format('Y-m-d') : 'N/A' }}</td>
+                                    <td>
+                                        @if ($obs->status === 'Pending')
+                                            <span class="status-badge">Pending</span>
+                                        @else
+                                            <span class="status-badge"
+                                                style="background: {{ $obs->status === 'Approved' ? '#d4edda; color: #155724; border: 1px solid #c3e6cb;' : '#f8d7da; color: #721c24; border: 1px solid #f5c6cb;' }}">
+                                                {{ $obs->status }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($obs->status === 'Pending')
+                                            <form method="POST" action="#" style="margin: 0;">
+                                                @csrf
+                                                <div style="margin-bottom: 5px;">
+                                                    <input type="text" name="review_comment"
+                                                        placeholder="Optional review comment..."
+                                                        style="font-size: 11px; padding: 4px; width: 100%; box-sizing: border-box; border: 1px solid #cccccc; border-radius: 3px;">
+                                                </div>
+                                                <div>
+                                                    <button type="submit" name="status" value="Approved"
+                                                        class="btn-action btn-approve"
+                                                        style="cursor: pointer;">Approve</button>
+                                                    <button type="submit" name="status" value="Rejected"
+                                                        class="btn-action btn-reject"
+                                                        style="cursor: pointer;">Reject</button>
+                                                </div>
+                                            </form>
+                                        @else
+                                            <div style="font-size: 11px; color: #555555;">
+                                                @if ($obs->review_comment)
+                                                    <span
+                                                        style="font-style: italic;">"{{ $obs->review_comment }}"</span>
+                                                @else
+                                                    <span style="color: #999999;">No comments</span>
+                                                @endif
+                                                @if ($obs->reviewer)
+                                                    <div style="font-size: 10px; color: #888888; margin-top: 2px;">By:
+                                                        {{ $obs->reviewer->full_name }}</div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: #666666;">No public
+                                        observation reports available in the queue.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -393,31 +450,171 @@
                         <li>Upload NDVI dataset (CSV)</li>
                         <li>Click the button below to select region and execute</li>
                     </ol>
-                    <a href="#" class="btn-execute" onclick="alert('Page under construction'); return false;">Open Evaluation Panel</a>
+                    <a href="{{ route('researcher.analysis') }}" class="btn-execute">Open Evaluation Panel</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAP -->
+    <!-- Script removed as observations are processed server-side -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
+        let map;
+        let markers = [];
+
         document.addEventListener('DOMContentLoaded', function() {
             const mapElement = document.getElementById('map');
-            if (!mapElement || typeof L === 'undefined') return;
+            if (!mapElement || typeof L === 'undefined') {
+                return;
+            }
 
-            // Center map on Kenya
-            const kenyaCenter = [1.2921, 37.8219];
-            const map = L.map(mapElement, {
-                zoomControl: true
-            }).setView(kenyaCenter, 6);
+            map = L.map(mapElement).setView([-1.2921, 36.8219], 5.5);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
-                attribution: '&copy; OpenStreetMap contributors'
+                attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
             }).addTo(map);
+
+            // Fetch dynamic vulnerability data from the API endpoint
+            fetch("{{ route('api.vulnerability_data') }}")
+                .then(response => response.json())
+                .then(data => {
+                    renderMarkers(data);
+                })
+                .catch(err => {
+                    console.error("Error loading vulnerability data:", err);
+                });
         });
+
+        function renderMarkers(data) {
+            // Remove existing markers
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            data.forEach(r => {
+                let color = '#9ca3af'; // Not Assessed (Gray)
+                if (r.vulnerability_level === 'High') {
+                    color = '#ff0000ff'; // Red
+                } else if (r.vulnerability_level === 'Moderate') {
+                    color = '#f59e0b'; // Yellow/Orange
+                } else if (r.vulnerability_level === 'Low') {
+                    color = '#10b981'; // Green
+                }
+
+                const marker = L.circleMarker([r.latitude, r.longitude], {
+                    radius: 10,
+                    fillColor: color,
+                    color: "#ffffff",
+                    weight: 1.5,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map);
+
+                const popupContent = `
+                    <div style="font-family: Arial, sans-serif; font-size: 13px;">
+                        <strong style="font-size: 14px; color: #1e5631;">${r.region_name}</strong><br>
+                        <strong>County:</strong> ${r.county || 'N/A'}<br>
+                        <strong>Ecosystem:</strong> ${r.ecosystem_type || 'N/A'}<br>
+                        <strong>Vulnerability Level:</strong> 
+                        <span style="font-weight: bold; color: ${color};">${r.vulnerability_level}</span> 
+                        ${r.overall_score ? `(${r.overall_score}%)` : ''}<br><br>
+                        <p style="margin: 0 0 8px 0; color: #555555; line-height: 1.4;">${r.interpretation}</p>
+                        <button onclick="openRegionDetails(${r.region_id})" style="background: #1e5631; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; width: 100%;">View Regional Datasets</button>
+                    </div>
+                `;
+                marker.bindPopup(popupContent);
+                markers.push(marker);
+            });
+        }
+
+        function openRegionDetails(regionId) {
+            const modal = document.getElementById('region-details-modal');
+            if (!modal) return;
+
+            document.getElementById('modal-region-name').innerText = "Loading...";
+            document.getElementById('modal-county').innerText = "";
+            document.getElementById('modal-ecosystem').innerText = "";
+            document.getElementById('modal-coordinates').innerText = "";
+            document.getElementById('modal-vulnerability').innerText = "";
+            document.getElementById('modal-flora-list').innerHTML = "Loading species...";
+            document.getElementById('modal-climate-list').innerHTML = "Loading climate data...";
+            document.getElementById('modal-vegetation-list').innerHTML = "Loading NDVI data...";
+
+            modal.style.display = 'flex';
+
+            fetch(`/api/regions/${regionId}/details`)
+                .then(res => res.json())
+                .then(data => {
+                    const r = data.region;
+                    document.getElementById('modal-region-name').innerText = r.region_name;
+                    document.getElementById('modal-county').innerText = r.county;
+                    document.getElementById('modal-ecosystem').innerText = r.ecosystem_type;
+                    document.getElementById('modal-coordinates').innerText = `${r.latitude}, ${r.longitude}`;
+
+                    let vulnText = "Not Assessed";
+                    let vulnColor = "#9ca3af";
+                    if (data.assessments.length > 0) {
+                        vulnText = `${data.assessments[0].vulnerability_level} (${data.assessments[0].overall_score}%)`;
+                        if (data.assessments[0].vulnerability_level === 'High') vulnColor = '#ef4444';
+                        else if (data.assessments[0].vulnerability_level === 'Moderate') vulnColor = '#f59e0b';
+                        else if (data.assessments[0].vulnerability_level === 'Low') vulnColor = '#10b981';
+                    }
+                    const vulnSpan = document.getElementById('modal-vulnerability');
+                    vulnSpan.innerText = vulnText;
+                    vulnSpan.style.color = vulnColor;
+
+                    let floraHtml = '<ul style="margin: 0; padding-left: 20px;">';
+                    if (data.flora.length === 0) {
+                        floraHtml += '<li>No registered species in this region.</li>';
+                    } else {
+                        data.flora.forEach(f => {
+                            floraHtml +=
+                                `<li><strong>${f.scientific_name}</strong> (${f.common_name || 'N/A'}) - <em>${f.conservation_status || 'Unknown status'}</em></li>`;
+                        });
+                    }
+                    floraHtml += '</ul>';
+                    document.getElementById('modal-flora-list').innerHTML = floraHtml;
+
+                    let climateHtml = '';
+                    if (data.climate.length === 0) {
+                        climateHtml =
+                            '<p style="color: #666666; font-style: italic; margin: 0;">No climate records.</p>';
+                    } else {
+                        climateHtml =
+                            '<table style="width:100%; border-collapse:collapse; font-size:11px;"><thead><tr style="border-bottom:1px solid #ddd; text-align:left;"><th>Date</th><th>Temp</th><th>Rain</th><th>Drought</th></tr></thead><tbody>';
+                        data.climate.forEach(c => {
+                            climateHtml +=
+                                `<tr style="border-bottom:1px solid #eee;"><td>${c.record_date}</td><td>${c.temperature_celsius}°C</td><td>${c.rainfall_mm}mm</td><td>${c.drought_index}</td></tr>`;
+                        });
+                        climateHtml += '</tbody></table>';
+                    }
+                    document.getElementById('modal-climate-list').innerHTML = climateHtml;
+
+                    let vegHtml = '';
+                    if (data.vegetation.length === 0) {
+                        vegHtml =
+                        '<p style="color: #666666; font-style: italic; margin: 0;">No vegetation records.</p>';
+                    } else {
+                        vegHtml =
+                            '<table style="width:100%; border-collapse:collapse; font-size:11px;"><thead><tr style="border-bottom:1px solid #ddd; text-align:left;"><th>Date</th><th>NDVI</th><th>Cover</th><th>Condition</th></tr></thead><tbody>';
+                        data.vegetation.forEach(v => {
+                            vegHtml +=
+                                `<tr style="border-bottom:1px solid #eee;"><td>${v.record_date}</td><td>${v.ndvi_value}</td><td>${v.vegetation_cover_percent}%</td><td>${v.vegetation_condition}</td></tr>`;
+                        });
+                        vegHtml += '</tbody></table>';
+                    }
+                    document.getElementById('modal-vegetation-list').innerHTML = vegHtml;
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('modal-region-name').innerText = "Error Loading Details";
+                });
+        }
+
+        function closeRegionModal() {
+            document.getElementById('region-details-modal').style.display = 'none';
+        }
     </script>
 
     <!-- Region Details Modal -->
