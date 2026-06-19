@@ -398,24 +398,24 @@
                                     </td>
                                     <td>
                                         @if ($obs->status === 'Pending')
-                                            <form method="POST" action="#" style="margin: 0;">
+                                            <form method="POST" action="{{ route('researcher.observations.review', $obs->observation_id) }}" style="margin: 0;">
                                                 @csrf
                                                 <div style="margin-bottom: 5px;">
                                                     <input type="text" name="review_comment"
                                                         placeholder="Optional review comment..."
                                                         style="font-size: 11px; padding: 4px; width: 100%; box-sizing: border-box; border: 1px solid #cccccc; border-radius: 3px;">
                                                 </div>
-                                                <div>
+                                                <div style="display: flex; gap: 4px;">
                                                     <button type="submit" name="status" value="Approved"
                                                         class="btn-action btn-approve"
-                                                        style="cursor: pointer;">Approve</button>
+                                                        style="cursor: pointer; flex-grow: 1;">Approve</button>
                                                     <button type="submit" name="status" value="Rejected"
                                                         class="btn-action btn-reject"
-                                                        style="cursor: pointer;">Reject</button>
+                                                        style="cursor: pointer; flex-grow: 1;">Reject</button>
                                                 </div>
                                             </form>
                                         @else
-                                            <div style="font-size: 11px; color: #555555;">
+                                            <div style="font-size: 11px; color: #555555; margin-bottom: 5px;">
                                                 @if ($obs->review_comment)
                                                     <span
                                                         style="font-style: italic;">"{{ $obs->review_comment }}"</span>
@@ -428,6 +428,7 @@
                                                 @endif
                                             </div>
                                         @endif
+                                        <button type="button" onclick="openObservationModal({{ $obs->observation_id }})" class="btn-action" style="background: #f4f6f4; border: 1px solid #c8d2c8; color: #1e5631; padding: 4px 8px; font-size: 10px; width: 100%; text-align: center; margin-top: 5px; box-sizing: border-box;">View Full Details & CSV</button>
                                     </td>
                                 </tr>
                             @empty
@@ -615,6 +616,129 @@
         function closeRegionModal() {
             document.getElementById('region-details-modal').style.display = 'none';
         }
+
+        // View Observation Report Details Modal
+        function openObservationModal(observationId) {
+            const modal = document.getElementById('observation-details-modal');
+            if (!modal) return;
+
+            // Reset modal data views
+            document.getElementById('obs-modal-content').style.display = 'none';
+            document.getElementById('obs-modal-loading').style.display = 'block';
+            modal.style.display = 'flex';
+
+            fetch(`/researcher/observations/${observationId}/details`)
+                .then(res => res.json())
+                .then(data => {
+                    const obs = data.observation;
+                    
+                    document.getElementById('obs-flora-name').innerText = obs.flora_name;
+                    document.getElementById('obs-location').innerText = obs.location;
+                    document.getElementById('obs-date-observed').innerText = obs.date_observed;
+                    document.getElementById('obs-date-submitted').innerText = obs.submission_date;
+                    document.getElementById('obs-status').innerText = obs.status;
+                    
+                    // Style status badge inside modal
+                    const statusSpan = document.getElementById('obs-status');
+                    if (obs.status === 'Approved') {
+                        statusSpan.style.color = '#155724';
+                        statusSpan.style.background = '#d4edda';
+                        statusSpan.style.border = '1px solid #c3e6cb';
+                    } else if (obs.status === 'Rejected') {
+                        statusSpan.style.color = '#721c24';
+                        statusSpan.style.background = '#f8d7da';
+                        statusSpan.style.border = '1px solid #f5c6cb';
+                    } else {
+                        statusSpan.style.color = '#8a6d3b';
+                        statusSpan.style.background = '#fcf8e3';
+                        statusSpan.style.border = '1px solid #faf2cc';
+                    }
+
+                    document.getElementById('obs-description').innerText = obs.description;
+                    
+                    // Observer details
+                    if (obs.observer) {
+                        document.getElementById('obs-observer-name').innerText = obs.observer.full_name;
+                        document.getElementById('obs-observer-email').innerText = obs.observer.email;
+                        document.getElementById('obs-observer-phone').innerText = obs.observer.phone_number || 'N/A';
+                    } else {
+                        document.getElementById('obs-observer-name').innerText = 'Public Observer';
+                        document.getElementById('obs-observer-email').innerText = 'N/A';
+                        document.getElementById('obs-observer-phone').innerText = 'N/A';
+                    }
+
+                    // Render supporting image
+                    const imgContainer = document.getElementById('obs-image-container');
+                    if (obs.image_url) {
+                        imgContainer.innerHTML = `<img src="${obs.image_url}" alt="Observation Image" style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #ddd; object-fit: cover;">`;
+                    } else {
+                        imgContainer.innerHTML = '<div style="background: #f1f5f9; border: 1px dashed #cbd5e1; height: 150px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 12px;">No image uploaded</div>';
+                    }
+
+                    // Parse and display CSV Preview Table
+                    const csvContainer = document.getElementById('obs-csv-container');
+                    if (data.csv_data && data.csv_data.headers && data.csv_data.headers.length > 0) {
+                        let tableHtml = '<div style="overflow-x: auto; max-height: 200px; border: 1px solid #e2e8f0; border-radius: 4px;"><table style="width:100%; border-collapse:collapse; font-size:11px; text-align:left;">';
+                        
+                        // Table Headers
+                        tableHtml += '<thead><tr style="background:#f8fafc; border-bottom:2px solid #cbd5e1; position:sticky; top:0;">';
+                        data.csv_data.headers.forEach(header => {
+                            tableHtml += `<th style="padding:8px; border-bottom:1px solid #cbd5e1; font-weight:bold; color:#334155;">${header}</th>`;
+                        });
+                        tableHtml += '</tr></thead><tbody>';
+
+                        // Table Rows
+                        data.csv_data.rows.forEach(row => {
+                            tableHtml += '<tr style="border-bottom:1px solid #f1f5f9;">';
+                            row.forEach(cell => {
+                                tableHtml += `<td style="padding:6px 8px; color:#475569;">${cell}</td>`;
+                            });
+                            tableHtml += '</tr>';
+                        });
+
+                        tableHtml += '</tbody></table></div>';
+                        csvContainer.innerHTML = tableHtml;
+                    } else {
+                        csvContainer.innerHTML = '<div style="background: #f1f5f9; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 4px; text-align: center; color: #64748b; font-size: 12px;">No CSV dataset preview available</div>';
+                    }
+
+                    // Action / Review box
+                    const actionContainer = document.getElementById('obs-action-container');
+                    if (obs.status === 'Pending') {
+                        actionContainer.innerHTML = `
+                            <form method="POST" action="/researcher/observations/${obs.observation_id}/review" style="margin: 0; background: #fafafa; border: 1px solid #e2e8f0; padding: 15px; border-radius: 4px;">
+                                <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'}">
+                                <h4 style="margin: 0 0 10px 0; color: #1e5631; font-size: 13px;">Review Decision</h4>
+                                <div style="margin-bottom: 10px;">
+                                    <textarea name="review_comment" placeholder="Optional review comment or feedback for the observer..." rows="2" style="width: 100%; padding: 6px; font-size: 12px; border: 1px solid #cccccc; border-radius: 3px; box-sizing: border-box; resize: vertical;"></textarea>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button type="submit" name="status" value="Approved" class="btn-execute" style="background: #1e5631; margin-top:0; padding: 8px; flex: 1; cursor: pointer;">Approve Report</button>
+                                    <button type="submit" name="status" value="Rejected" class="btn-execute" style="background: #a94442; margin-top:0; padding: 8px; flex: 1; cursor: pointer;">Reject Report</button>
+                                </div>
+                            </form>
+                        `;
+                    } else {
+                        actionContainer.innerHTML = `
+                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 4px; font-size: 12px;">
+                                <strong>Review Comment:</strong> <span style="font-style: italic;">"${obs.review_comment || 'No comment provided'}"</span><br>
+                                <span style="font-size: 11px; color: #64748b; margin-top: 5px; display: block;">Reviewed by: ${obs.reviewer ? obs.reviewer.full_name : 'Researcher'}</span>
+                            </div>
+                        `;
+                    }
+
+                    document.getElementById('obs-modal-loading').style.display = 'none';
+                    document.getElementById('obs-modal-content').style.display = 'block';
+                })
+                .catch(err => {
+                    console.error("Error loading observation details:", err);
+                    document.getElementById('obs-modal-loading').innerHTML = '<span style="color:red; font-weight:bold;">Error loading details. Please close and try again.</span>';
+                });
+        }
+
+        function closeObservationModal() {
+            document.getElementById('observation-details-modal').style.display = 'none';
+        }
     </script>
 
     <!-- Region Details Modal -->
@@ -668,6 +792,70 @@
             <div style="margin-top: 20px; text-align: right; border-top: 1px solid #eeeeee; padding-top: 15px;">
                 <button onclick="closeRegionModal()"
                     style="background: #e2e8f0; border: 1px solid #cccccc; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: #333333;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Observation Report Details Modal -->
+    <div id="observation-details-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(2px);">
+        <div style="background: white; border: 1px solid #cccccc; border-radius: 6px; width: 100%; max-width: 800px; max-height: 90%; overflow-y: auto; padding: 25px; box-sizing: border-box; position: relative; font-family: Arial, sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+            <button onclick="closeObservationModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; font-weight: bold; cursor: pointer; color: #666666;">&times;</button>
+            
+            <h2 style="margin-top: 0; color: #1e5631; border-bottom: 2px solid #1e5631; padding-bottom: 8px; font-size: 18px; font-weight: bold;">Public Observation Report Details</h2>
+            
+            <div id="obs-modal-loading" style="text-align: center; padding: 40px 0; color: #666; font-size: 14px;">
+                <div style="display: inline-block; width: 30px; height: 30px; border: 3px solid rgba(30,86,49,0.1); border-radius: 50%; border-top-color: #1e5631; animation: spin 1s ease-in-out infinite; margin-bottom: 10px;"></div>
+                <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+                <div>Loading observation data...</div>
+            </div>
+            
+            <div id="obs-modal-content" style="display: none;">
+                <!-- Main Grid Split -->
+                <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; margin-bottom: 20px;">
+                    <div>
+                        <!-- Details Table -->
+                        <table style="width: 100%; font-size: 12px; margin-bottom: 15px; border-collapse: collapse;">
+                            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b; width: 35%;">Flora Name:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631; font-size: 14px;" id="obs-flora-name"></td></tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Region / Location:</td><td style="padding: 6px 0;" id="obs-location"></td></tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Date Observed:</td><td style="padding: 6px 0;" id="obs-date-observed"></td></tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Date Submitted:</td><td style="padding: 6px 0;" id="obs-date-submitted"></td></tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Report Status:</td><td style="padding: 6px 0;"><span id="obs-status" style="font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 11px;"></span></td></tr>
+                        </table>
+                        
+                        <!-- Observer Info -->
+                        <h4 style="margin: 15px 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Observer Information</h4>
+                        <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                            <tr><td style="padding: 4px 0; font-weight: bold; color: #64748b; width: 35%;">Full Name:</td><td style="padding: 4px 0;" id="obs-observer-name"></td></tr>
+                            <tr><td style="padding: 4px 0; font-weight: bold; color: #64748b;">Email Address:</td><td style="padding: 4px 0;" id="obs-observer-email"></td></tr>
+                            <tr><td style="padding: 4px 0; font-weight: bold; color: #64748b;">Phone Number:</td><td style="padding: 4px 0;" id="obs-observer-phone"></td></tr>
+                        </table>
+                    </div>
+                    
+                    <!-- Right Column: Image and Actions -->
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <h4 style="margin: 0 0 5px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Submitted Image</h4>
+                        <div id="obs-image-container" style="text-align: center;"></div>
+                    </div>
+                </div>
+
+                <!-- Text-based observations -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px;">Observation Text & Field Notes</h4>
+                    <p id="obs-description" style="margin: 0; font-size: 12px; line-height: 1.5; color: #334155; white-space: pre-line;"></p>
+                </div>
+
+                <!-- CSV Preview Section -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin: 0 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Supporting Dataset Preview (CSV)</h4>
+                    <div id="obs-csv-container"></div>
+                </div>
+                
+                <!-- Action Review Box -->
+                <div id="obs-action-container" style="margin-top: 20px;"></div>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: right; border-top: 1px solid #eeeeee; padding-top: 15px;">
+                <button onclick="closeObservationModal()" style="background: #e2e8f0; border: 1px solid #cccccc; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: #333333;">Close Details</button>
             </div>
         </div>
     </div>
