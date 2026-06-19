@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DatasetController;
 use App\Models\Dataset;
+use App\Models\Flora;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 // Guest / Public Routes
@@ -13,6 +15,9 @@ Route::get('/', function () {
 Route::get('/map', function () {
     return view('public.map');
 })->name('map');
+
+Route::get('/api/vulnerability-data', [DatasetController::class, 'getVulnerabilityData'])->name('api.vulnerability_data');
+Route::get('/api/regions/{region_id}/details', [DatasetController::class, 'getRegionDetails'])->name('api.region_details');
 
 
 // Authentication routes (Guest only)
@@ -74,6 +79,9 @@ Route::middleware('auth')->group(function () {
         // Flora Registry Actions
         Route::get('/researcher/flora/new', [DatasetController::class, 'showCreateFlora'])->name('researcher.flora.create');
         Route::post('/researcher/flora/new', [DatasetController::class, 'createFlora'])->name('researcher.flora.store');
+
+        //delete all uploaded datasets
+        Route::post('/researcher/datasets/delete', [DatasetController::class, 'deleteAllUploads'])->name('researcher.deleteUploads');
     });
 
     // System Administrator Area

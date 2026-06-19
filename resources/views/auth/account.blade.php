@@ -221,13 +221,13 @@
             <button type="submit" class="btn-submit">Update Profile Settings</button>
         </form>
 
-        {{-- @if (Auth::user()->isResearcher())
+        @if (Auth::user()->isResearcher())
             <!--button to delete uploaded datasets-->
             <form method="POST" action="{{ route('researcher.deleteUploads') }}" style="margin-top: 15px;" onsubmit="return confirm('Are you absolutely sure you want to delete all your uploaded datasets? This will remove all associated climate, vegetation, and flora records and cannot be undone.');">
                 @csrf
                 <button type="submit" class="btn-submit" style="background: #d9534f; margin-top: 10px;">Delete All Uploaded Datasets</button>
             </form>
-        @endif --}}
+        @endif
 
         <div class="footer-links">
             @if(Auth::user()->isAdmin())
