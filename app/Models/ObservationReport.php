@@ -20,6 +20,7 @@ class ObservationReport extends Model
         'location',
         'description',
         'image_path',
+        'csv_path',
         'date_observed',
         'submission_date',
         'status',
