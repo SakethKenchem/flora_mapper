@@ -435,4 +435,116 @@ class DatasetController extends Controller
             'assessments' => $assessments,
         ]);
     }
+
+    // Submit a public observation report with CSV and image
+    public function submitObservation(Request $request)
+    {
+        $request->validate([
+            'flora_id' => 'nullable|exists:flora,flora_id',
+            'flora_name_custom' => 'required_without:flora_id|nullable|string|max:255',
+            'location' => 'required|string|max:255',
+            'date_observed' => 'required|date|before_or_equal:today',
+            'description' => 'required|string',
+            'image_file' => 'required|file|image|max:4096',
+            'csv_file' => 'required|file|mimes:csv,txt|max:4096',
+        ]);
+
+        $imageFile = $request->file('image_file');
+        $imagePath = $imageFile->store('observations/images', 'public');
+
+        $csvFile = $request->file('csv_file');
+        $csvPath = $csvFile->store('observations/csvs');
+
+        $floraId = $request->flora_id;
+        if ($floraId) {
+            $flora = Flora::find($floraId);
+            $floraName = $flora->scientific_name;
+        } else {
+            $floraName = $request->flora_name_custom;
+        }
+
+        ObservationReport::create([
+            'public_id' => Auth::user()->user_id,
+            'flora_id' => $floraId,
+            'flora_name' => $floraName,
+            'location' => $request->location,
+            'description' => $request->description,
+            'image_path' => $imagePath,
+            'csv_path' => $csvPath,
+            'date_observed' => $request->date_observed,
+            'submission_date' => now(),
+            'status' => 'Pending',
+        ]);
+
+        return redirect()->back()->with('success', 'Observation report submitted successfully for review.');
+    }
+
+    // Get dynamic observation details, including parsed CSV preview
+    public function getObservationDetails($observationId)
+    {
+        $observation = ObservationReport::with(['observer', 'reviewer', 'flora'])->findOrFail($observationId);
+
+        $csvData = [];
+        if ($observation->csv_path && Storage::exists($observation->csv_path)) {
+            $csvContent = Storage::get($observation->csv_path);
+            $fileHandle = fopen('php://temp', 'r+');
+            if ($fileHandle !== false) {
+                fwrite($fileHandle, $csvContent);
+                rewind($fileHandle);
+                $headers = fgetcsv($fileHandle);
+                $rows = [];
+                $count = 0;
+                while (($row = fgetcsv($fileHandle)) !== false && $count < 50) {
+                    $rows[] = $row;
+                    $count++;
+                }
+                fclose($fileHandle);
+                $csvData = [
+                    'headers' => $headers,
+                    'rows' => $rows,
+                ];
+            }
+        }
+
+        return response()->json([
+            'observation' => [
+                'observation_id' => $observation->observation_id,
+                'flora_name' => $observation->flora_name,
+                'location' => $observation->location,
+                'description' => $observation->description,
+                'image_url' => $observation->image_path ? Storage::url($observation->image_path) : null,
+                'date_observed' => $observation->date_observed ? $observation->date_observed->format('Y-m-d') : null,
+                'submission_date' => $observation->submission_date ? $observation->submission_date->format('Y-m-d H:i:s') : null,
+                'status' => $observation->status,
+                'review_comment' => $observation->review_comment,
+                'observer' => $observation->observer ? [
+                    'full_name' => $observation->observer->full_name,
+                    'email' => $observation->observer->email,
+                    'phone_number' => $observation->observer->phone_number,
+                ] : null,
+                'reviewer' => $observation->reviewer ? [
+                    'full_name' => $observation->reviewer->full_name,
+                ] : null,
+            ],
+            'csv_data' => $csvData,
+        ]);
+    }
+
+    // Review an observation (approve or reject)
+    public function reviewObservation(Request $request, $observationId)
+    {
+        $request->validate([
+            'status' => 'required|in:Approved,Rejected',
+            'review_comment' => 'nullable|string|max:1000',
+        ]);
+
+        $observation = ObservationReport::findOrFail($observationId);
+        $observation->update([
+            'status' => $request->status,
+            'review_comment' => $request->review_comment,
+            'researcher_id' => Auth::user()->user_id,
+        ]);
+
+        return redirect()->back()->with('success', "Observation report has been successfully reviewed and marked as {$request->status}.");
+    }
 }

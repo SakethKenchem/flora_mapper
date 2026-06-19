@@ -47,8 +47,13 @@ Route::middleware('auth')->group(function () {
     // General Public Area
     Route::middleware('role:GENERAL_PUBLIC,RESEARCHER,SYSTEM_ADMINISTRATOR')->group(function () {
         Route::get('/public/dashboard', function () {
-            return view('public.dashboard');
+            $myObservationsCount = \App\Models\ObservationReport::where('public_id', auth()->id())->count();
+            $registeredFlora = \App\Models\Flora::select('flora_id', 'scientific_name', 'common_name')->get();
+            return view('public.dashboard', compact('myObservationsCount', 'registeredFlora'));
         })->name('public.dashboard');
+
+        // Submit observation report
+        Route::post('/public/observations/submit', [DatasetController::class, 'submitObservation'])->name('public.observations.submit');
     });
 
     // Researcher Area
@@ -63,6 +68,10 @@ Route::middleware('auth')->group(function () {
 
             return view('researcher.dashboard', compact('datasetsCount', 'climateCount', 'vegCount', 'floraCount', 'assessmentsCount', 'observations'));
         })->name('researcher.dashboard');
+
+        // Dynamic details and reviews for observation reports
+        Route::get('/researcher/observations/{observation_id}/details', [DatasetController::class, 'getObservationDetails'])->name('researcher.observations.details');
+        Route::post('/researcher/observations/{observation_id}/review', [DatasetController::class, 'reviewObservation'])->name('researcher.observations.review');
 
         // Climate Dataset Ingestion
         Route::get('/researcher/datasets/climate/upload', [DatasetController::class, 'showUploadClimate'])->name('researcher.datasets.climate.upload');
