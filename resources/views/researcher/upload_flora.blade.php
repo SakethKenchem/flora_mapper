@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Climate Dataset - FloraMapper</title>
+    <title>Upload Flora Dataset - FloraMapper</title>
     <style>
         body {
             margin: 0;
@@ -63,7 +63,8 @@
             font-size: 13px;
         }
 
-        .menu-link:hover, .menu-link.active {
+        .menu-link:hover,
+        .menu-link.active {
             background: rgba(255, 255, 255, 0.15);
         }
 
@@ -227,13 +228,16 @@
             <div class="menu-label">Datasets</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link active">Upload Climate Data</a>
+                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate
+                        Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI Data</a>
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI
+                        Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload Flora Data</a>
+                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link active">Upload Flora
+                        Data</a>
                 </li>
             </ul>
 
@@ -267,7 +271,7 @@
 
     <div class="main-content">
         <div class="header">
-            <h1>Upload Climate Dataset</h1>
+            <h1>Upload Flora Dataset</h1>
         </div>
 
         @if ($errors->any())
@@ -279,29 +283,35 @@
         @endif
 
         <div class="panel">
-            <div class="panel-title">Climate File Ingestion Form</div>
+            <div class="panel-title">Flora File Ingestion Form</div>
 
-            <form method="POST" action="{{ route('researcher.datasets.climate.upload.submit') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('researcher.datasets.flora.upload.submit') }}"
+                enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group">
                     <label for="dataset_name">Dataset Title/Name</label>
-                    <input type="text" id="dataset_name" name="dataset_name" class="form-control" placeholder="e.g. Kenya Meteorological Station Data 2026" value="{{ old('dataset_name') }}" required>
+                    <input type="text" id="dataset_name" name="dataset_name" class="form-control"
+                        placeholder="e.g. Flora Species Distribution 2026" value="{{ old('dataset_name') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="source_name">Data Source</label>
-                    <input type="text" id="source_name" name="source_name" class="form-control" placeholder="e.g. KMD, WorldClim" value="{{ old('source_name') }}" required>
+                    <input type="text" id="source_name" name="source_name" class="form-control"
+                        placeholder="e.g. KEFRI, GBIF, Kenya Wildlife Service" value="{{ old('source_name') }}"
+                        required>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Description (Optional)</label>
-                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Brief summary of dates covered, parameters, etc.">{{ old('description') }}</textarea>
+                    <textarea id="description" name="description" class="form-control" rows="3"
+                        placeholder="Brief details about the flora data survey, etc.">{{ old('description') }}</textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="csv_file">Select CSV Dataset File</label>
-                    <input type="file" id="csv_file" name="csv_file" class="form-control" accept=".csv,.txt" required>
+                    <input type="file" id="csv_file" name="csv_file" class="form-control" accept=".csv,.txt"
+                        required>
                 </div>
 
                 <button type="submit" class="btn-submit">Import Dataset</button>
@@ -309,19 +319,28 @@
             </form>
 
             <div class="info-box">
+                <div style="margin-bottom: 10px;">
+                    <a href="{{ asset('flora_sample.csv') }}" download
+                        style="color: #1e5631; font-weight: bold; text-decoration: underline;">
+                        Download Template Flora CSV File
+                    </a>
+                </div>
                 <strong>CSV File Format Requirements:</strong>
                 <p>The first line of the file must be the header. Required columns are case-insensitive:</p>
                 <ul>
-                    <li><code>region_name</code>: Must match one of our seeded regions exactly (e.g. <strong>Mau Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>, <strong>Tsavo East</strong>).</li>
-                    <li><code>record_date</code>: In YYYY-MM-DD format.</li>
-                    <li><code>temperature_celsius</code>: Temperature value (decimal).</li>
-                    <li><code>rainfall_mm</code>: Rainfall amount (decimal).</li>
-                    <li>Optional columns: <code>humidity_percent</code>, <code>drought_index</code>, <code>flood_risk_level</code>.</li>
+                    <li><code>scientific_name</code>: The scientific classification of the species (Required).</li>
+                    <li><code>region_name</code>: Optional. If it matches one of our regions exactly (e.g. <strong>Mau
+                            Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>,
+                        <strong>Tsavo East</strong>), the record will be linked to that region.
+                    </li>
+                    <li>Optional columns: <code>common_name</code>, <code>species_type</code>,
+                        <code>conservation_status</code>, <code>habitat_type</code>, <code>vulnerability_level</code>.
+                    </li>
                 </ul>
                 <strong>Example Format:</strong>
-                <pre>region_name,record_date,temperature_celsius,rainfall_mm,humidity_percent,drought_index,flood_risk_level
-Mau Forest,2026-01-01,21.40,132.50,78.00,0.25,Low
-Tana Delta,2026-01-01,28.60,61.30,69.10,0.65,High</pre>
+                <pre>region_name,scientific_name,common_name,species_type,conservation_status,habitat_type,vulnerability_level
+Mau Forest,Ficus sycomorus,Sycamore Fig,Tree,Least Concern,Montane Forest,Low
+Tana Delta,Rhizophora mucronata,Red Mangrove,Mangrove,Near Threatened,Estuary/Mangrove,High</pre>
             </div>
         </div>
     </div>

@@ -63,7 +63,8 @@
             font-size: 13px;
         }
 
-        .menu-link:hover, .menu-link.active {
+        .menu-link:hover,
+        .menu-link.active {
             background: rgba(255, 255, 255, 0.15);
         }
 
@@ -227,13 +228,15 @@
             <div class="menu-label">Datasets</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate Data</a>
+                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate
+                        Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link active">Upload NDVI Data</a>
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link active">Upload NDVI
+                        Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link">Upload Flora Data</a>
+                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload Flora Data</a>
                 </li>
             </ul>
 
@@ -281,27 +284,32 @@
         <div class="panel">
             <div class="panel-title">Vegetation File Ingestion Form</div>
 
-            <form method="POST" action="{{ route('researcher.datasets.vegetation.upload.submit') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('researcher.datasets.vegetation.upload.submit') }}"
+                enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group">
                     <label for="dataset_name">Dataset Title/Name</label>
-                    <input type="text" id="dataset_name" name="dataset_name" class="form-control" placeholder="e.g. MODIS NDVI Forest Cover 2026" value="{{ old('dataset_name') }}" required>
+                    <input type="text" id="dataset_name" name="dataset_name" class="form-control"
+                        placeholder="e.g. MODIS NDVI Forest Cover 2026" value="{{ old('dataset_name') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="source_name">Data Source</label>
-                    <input type="text" id="source_name" name="source_name" class="form-control" placeholder="e.g. MODIS, Landsat, Sentinel" value="{{ old('source_name') }}" required>
+                    <input type="text" id="source_name" name="source_name" class="form-control"
+                        placeholder="e.g. MODIS, Landsat, Sentinel" value="{{ old('source_name') }}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Description (Optional)</label>
-                    <textarea id="description" name="description" class="form-control" rows="3" placeholder="Brief details about index values, reference bounds, etc.">{{ old('description') }}</textarea>
+                    <textarea id="description" name="description" class="form-control" rows="3"
+                        placeholder="Brief details about index values, reference bounds, etc.">{{ old('description') }}</textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="csv_file">Select CSV Dataset File</label>
-                    <input type="file" id="csv_file" name="csv_file" class="form-control" accept=".csv,.txt" required>
+                    <input type="file" id="csv_file" name="csv_file" class="form-control" accept=".csv,.txt"
+                        required>
                 </div>
 
                 <button type="submit" class="btn-submit">Import Dataset</button>
@@ -312,10 +320,14 @@
                 <strong>CSV File Format Requirements:</strong>
                 <p>The first line of the file must be the header. Required columns are case-insensitive:</p>
                 <ul>
-                    <li><code>region_name</code>: Must match one of our seeded regions exactly (e.g. <strong>Mau Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>, <strong>Tsavo East</strong>).</li>
+                    <li><code>region_name</code>: Must match one of our seeded regions exactly (e.g. <strong>Mau
+                            Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>,
+                        <strong>Tsavo East</strong>).</li>
                     <li><code>record_date</code>: In YYYY-MM-DD format.</li>
-                    <li><code>ndvi_value</code>: Normalized Difference Vegetation Index (typically between 0.000 and 1.000).</li>
-                    <li>Optional columns: <code>vegetation_cover_percent</code>, <code>vegetation_condition</code>, <code>data_source</code>.</li>
+                    <li><code>ndvi_value</code>: Normalized Difference Vegetation Index (typically between 0.000 and
+                        1.000).</li>
+                    <li>Optional columns: <code>vegetation_cover_percent</code>, <code>vegetation_condition</code>,
+                        <code>data_source</code>.</li>
                 </ul>
                 <strong>Example Format:</strong>
                 <pre>region_name,record_date,ndvi_value,vegetation_cover_percent,vegetation_condition,data_source

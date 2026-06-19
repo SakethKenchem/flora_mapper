@@ -66,6 +66,14 @@ Route::middleware('auth')->group(function () {
         // Vegetation Dataset Ingestion
         Route::get('/researcher/datasets/vegetation/upload', [DatasetController::class, 'showUploadVegetation'])->name('researcher.datasets.vegetation.upload');
         Route::post('/researcher/datasets/vegetation/upload', [DatasetController::class, 'uploadVegetation'])->name('researcher.datasets.vegetation.upload.submit');
+
+        // Flora Dataset Ingestion
+        Route::get('/researcher/datasets/flora/upload', [DatasetController::class, 'showUploadFlora'])->name('researcher.datasets.flora.upload');
+        Route::post('/researcher/datasets/flora/upload', [DatasetController::class, 'uploadFlora'])->name('researcher.datasets.flora.upload.submit');
+
+        // Flora Registry Actions
+        Route::get('/researcher/flora/new', [DatasetController::class, 'showCreateFlora'])->name('researcher.flora.create');
+        Route::post('/researcher/flora/new', [DatasetController::class, 'createFlora'])->name('researcher.flora.store');
     });
 
     // System Administrator Area

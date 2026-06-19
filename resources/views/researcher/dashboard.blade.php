@@ -285,7 +285,7 @@
                         Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Upload
+                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload
                         Flora Data</a>
                 </li>
             </ul>
