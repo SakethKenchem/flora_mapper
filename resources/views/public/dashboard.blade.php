@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Public Dashboard - FloraMapper</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <style>
         body {
             margin: 0;
@@ -56,7 +57,8 @@
             font-size: 14px;
         }
 
-        .menu-link:hover, .menu-link.active {
+        .menu-link:hover,
+        .menu-link.active {
             background: rgba(255, 255, 255, 0.15);
         }
 
@@ -209,10 +211,12 @@
                     <a href="{{ route('account') }}" class="menu-link">My Account</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" onclick="alert('Search functionality coming soon!')" class="menu-link">Search Region</a>
+                    <a href="#" onclick="alert('Search functionality coming soon!')" class="menu-link">Search
+                        Region</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" onclick="alert('Observation submission form is under development!')" class="menu-link">Submit Observation</a>
+                    <a href="#" onclick="alert('Observation submission form is under development!')"
+                        class="menu-link">Submit Observation</a>
                 </li>
             </ul>
         </div>
@@ -230,7 +234,8 @@
     <div class="main-content">
         <div class="header">
             <h1>Public observer dashboard</h1>
-            <span style="font-size: 13px; background: #e2e8f0; padding: 4px 8px; border-radius: 4px;">General Public</span>
+            <span style="font-size: 13px; background: #e2e8f0; padding: 4px 8px; border-radius: 4px;">General
+                Public</span>
         </div>
 
         @if (session('success'))
@@ -254,7 +259,8 @@
                     </div>
 
                     <a href="{{ route('map') }}" class="btn-action">Explore Interactive Map</a>
-                    <a href="#" onclick="alert('Submission form coming soon!')" class="btn-action" style="background: white; color: #1e5631;">Submit Observation</a>
+                    <a href="#" onclick="alert('Submission form coming soon!')" class="btn-action"
+                        style="background: white; color: #1e5631;">Submit Observation</a>
                 </div>
 
                 <div class="panel">
@@ -276,7 +282,8 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const mapElement = document.getElementById('dashboard-kenya-map');
@@ -284,12 +291,42 @@
                 return;
             }
 
-            const dashboardMap = L.map(mapElement).setView([0.0236, 37.9062], 5.5);
+            const dashboardMap = L.map(mapElement).setView([-1.2921, 36.8219], 6);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
             }).addTo(dashboardMap);
+
+            // Fetch dynamic assessment data
+            fetch("{{ route('api.vulnerability_data') }}")
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(r => {
+                        let color = '#9ca3af'; // Not Assessed (Gray)
+                        if (r.vulnerability_level === 'High') {
+                            color = '#ef4444'; // Red
+                        } else if (r.vulnerability_level === 'Moderate') {
+                            color = '#f59e0b'; // Yellow/Orange
+                        } else if (r.vulnerability_level === 'Low') {
+                            color = '#10b981'; // Green
+                        }
+
+                        const marker = L.circleMarker([r.latitude, r.longitude], {
+                            radius: 8,
+                            fillColor: color,
+                            color: "#ffffff",
+                            weight: 1.5,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        }).addTo(dashboardMap);
+
+                        marker.bindPopup(
+                            `<strong>${r.region_name}</strong><br>Vulnerability: ${r.vulnerability_level} ${r.overall_score ? `(${r.overall_score}%)` : ''}`
+                            );
+                    });
+                })
+                .catch(err => console.error("Error loading vulnerability data:", err));
 
             setTimeout(() => {
                 dashboardMap.invalidateSize();
