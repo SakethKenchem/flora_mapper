@@ -277,37 +277,32 @@
             <div class="menu-label">Datasets</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link"">Upload Climate
+                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate
                         Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link"">Upload
-                        NDVI
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI
                         Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload
-                        Flora Data</a>
+                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload Flora Data</a>
                 </li>
             </ul>
 
             <div class="menu-label">Assessments</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Run
-                        Assessment</a>
+                    <a href="{{ route('researcher.analysis') }}" class="menu-link">Run Assessment</a>
                 </li>
             </ul>
 
             <div class="menu-label">Flora & Reports</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="#" class="menu-link" onclick="alert('Page under construction'); return false;">Add
-                        Flora Record</a>
+                    <a href="{{ route('researcher.flora.create') }}" class="menu-link">Add Flora Record</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link"
-                        onclick="alert('Page under construction'); return false;">Reports Manager</a>
+                    <a href="#" class="menu-link">Reports Manager</a>
                 </li>
             </ul>
         </div>
@@ -379,6 +374,68 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($observations as $obs)
+                                <tr>
+                                    <td>
+                                        <strong>{{ $obs->flora_name }}</strong>
+                                        @if ($obs->description)
+                                            <div style="font-size: 11px; color: #666666; margin-top: 2px;">
+                                                {{ $obs->description }}</div>
+                                        @endif
+                                    </td>
+                                    <td>{{ $obs->location }}</td>
+                                    <td>{{ $obs->observer ? $obs->observer->full_name : 'Public Observer' }}</td>
+                                    <td>{{ $obs->date_observed ? $obs->date_observed->format('Y-m-d') : 'N/A' }}</td>
+                                    <td>
+                                        @if ($obs->status === 'Pending')
+                                            <span class="status-badge">Pending</span>
+                                        @else
+                                            <span class="status-badge"
+                                                style="background: {{ $obs->status === 'Approved' ? '#d4edda; color: #155724; border: 1px solid #c3e6cb;' : '#f8d7da; color: #721c24; border: 1px solid #f5c6cb;' }}">
+                                                {{ $obs->status }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($obs->status === 'Pending')
+                                            <form method="POST" action="#" style="margin: 0;">
+                                                @csrf
+                                                <div style="margin-bottom: 5px;">
+                                                    <input type="text" name="review_comment"
+                                                        placeholder="Optional review comment..."
+                                                        style="font-size: 11px; padding: 4px; width: 100%; box-sizing: border-box; border: 1px solid #cccccc; border-radius: 3px;">
+                                                </div>
+                                                <div>
+                                                    <button type="submit" name="status" value="Approved"
+                                                        class="btn-action btn-approve"
+                                                        style="cursor: pointer;">Approve</button>
+                                                    <button type="submit" name="status" value="Rejected"
+                                                        class="btn-action btn-reject"
+                                                        style="cursor: pointer;">Reject</button>
+                                                </div>
+                                            </form>
+                                        @else
+                                            <div style="font-size: 11px; color: #555555;">
+                                                @if ($obs->review_comment)
+                                                    <span
+                                                        style="font-style: italic;">"{{ $obs->review_comment }}"</span>
+                                                @else
+                                                    <span style="color: #999999;">No comments</span>
+                                                @endif
+                                                @if ($obs->reviewer)
+                                                    <div style="font-size: 10px; color: #888888; margin-top: 2px;">By:
+                                                        {{ $obs->reviewer->full_name }}</div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: #666666;">No public
+                                        observation reports available in the queue.</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -393,14 +450,13 @@
                         <li>Upload NDVI dataset (CSV)</li>
                         <li>Click the button below to select region and execute</li>
                     </ol>
-                    <a href="#" class="btn-execute" onclick="alert('Page under construction'); return false;">Open
-                        Evaluation Panel</a>
+                    <a href="{{ route('researcher.analysis') }}" class="btn-execute">Open Evaluation Panel</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAP -->
+    <!-- Script removed as observations are processed server-side -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
@@ -413,7 +469,7 @@
                 return;
             }
 
-            map = L.map(mapElement).setView([1.2921, 37.8219], 5.5);
+            map = L.map(mapElement).setView([-1.2921, 36.8219], 5.5);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,

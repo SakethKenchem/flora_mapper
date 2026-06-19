@@ -80,6 +80,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/researcher/flora/new', [DatasetController::class, 'showCreateFlora'])->name('researcher.flora.create');
         Route::post('/researcher/flora/new', [DatasetController::class, 'createFlora'])->name('researcher.flora.store');
 
+
+        // Analysis console
+        Route::get('/researcher/analysis', [DatasetController::class, 'showAnalysis'])->name('researcher.analysis');
+        Route::post('/researcher/analysis', [DatasetController::class, 'runAnalysis'])->name('researcher.analysis.submit');
+
         //delete all uploaded datasets
         Route::post('/researcher/datasets/delete', [DatasetController::class, 'deleteAllUploads'])->name('researcher.deleteUploads');
     });
