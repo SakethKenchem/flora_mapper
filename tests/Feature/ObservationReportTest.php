@@ -74,6 +74,13 @@ class ObservationReportTest extends TestCase
                 'description' => 'Leaf discoloration observed on local species.',
                 'image_file' => $image,
                 'csv_file' => $csv,
+                'temperature_celsius' => 24.5,
+                'rainfall_mm' => 150.2,
+                'humidity_percent' => 65.0,
+                'drought_index' => 2.5,
+                'ndvi_value' => 0.452,
+                'vegetation_cover_percent' => 75.5,
+                'vegetation_condition' => 'Healthy',
             ]);
 
         $response->assertRedirect();
@@ -86,6 +93,13 @@ class ObservationReportTest extends TestCase
             'location' => 'Lari Forest',
             'description' => 'Leaf discoloration observed on local species.',
             'status' => 'Pending',
+            'temperature_celsius' => 24.5,
+            'rainfall_mm' => 150.20,
+            'humidity_percent' => 65.00,
+            'drought_index' => 2.50,
+            'ndvi_value' => 0.452,
+            'vegetation_cover_percent' => 75.50,
+            'vegetation_condition' => 'Healthy',
         ]);
 
         $report = ObservationReport::where('location', 'Lari Forest')->first();
@@ -121,6 +135,13 @@ class ObservationReportTest extends TestCase
             'description' => 'Discolored leaves',
             'image_path' => 'observations/images/temp.jpg',
             'csv_path' => 'observations/csvs/temp.csv',
+            'temperature_celsius' => 24.5,
+            'rainfall_mm' => 150.2,
+            'humidity_percent' => 65.0,
+            'drought_index' => 2.5,
+            'ndvi_value' => 0.452,
+            'vegetation_cover_percent' => 75.5,
+            'vegetation_condition' => 'Healthy',
             'date_observed' => now()->toDateString(),
             'submission_date' => now(),
             'status' => 'Pending',
@@ -137,6 +158,13 @@ class ObservationReportTest extends TestCase
                 'location',
                 'description',
                 'image_url',
+                'temperature_celsius',
+                'rainfall_mm',
+                'humidity_percent',
+                'drought_index',
+                'ndvi_value',
+                'vegetation_cover_percent',
+                'vegetation_condition',
                 'date_observed',
                 'submission_date',
                 'status',
@@ -151,6 +179,13 @@ class ObservationReportTest extends TestCase
         $response->assertJsonFragment([
             'flora_name' => 'Ficus sycomorus',
             'location' => 'Tana Delta',
+            'temperature_celsius' => 24.5,
+            'rainfall_mm' => 150.2,
+            'humidity_percent' => 65,
+            'drought_index' => 2.5,
+            'ndvi_value' => 0.452,
+            'vegetation_cover_percent' => 75.5,
+            'vegetation_condition' => 'Healthy',
         ]);
 
         $this->assertEquals(['measurement', 'value'], $response->json('csv_data.headers'));

@@ -288,6 +288,58 @@
                 </div>
             </div>
         </div>
+
+        <!-- Submitted Observations History Log -->
+        <div class="panel" style="margin-top: 20px;">
+            <div class="panel-title">My Submitted Observations Queue</div>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #dddddd; background: #f9f9f9; text-align: left;">
+                            <th style="padding: 10px; font-weight: bold; width: 25%;">Flora Name</th>
+                            <th style="padding: 10px; font-weight: bold; width: 25%;">Location</th>
+                            <th style="padding: 10px; font-weight: bold; width: 15%;">Date Observed</th>
+                            <th style="padding: 10px; font-weight: bold; width: 12%;">Status</th>
+                            <th style="padding: 10px; font-weight: bold;">Reviewer / Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($myObservations as $obs)
+                            <tr style="border-bottom: 1px solid #eeeeee;">
+                                <td style="padding: 10px; font-weight: bold; color: #1e5631;">{{ $obs->flora_name }}</td>
+                                <td style="padding: 10px;">{{ $obs->location }}</td>
+                                <td style="padding: 10px;">{{ $obs->date_observed ? $obs->date_observed->format('Y-m-d') : 'N/A' }}</td>
+                                <td style="padding: 10px;">
+                                    <span style="font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 11px; display: inline-block; text-align: center;
+                                        @if ($obs->status === 'Approved')
+                                            color: #155724; background: #d4edda; border: 1px solid #c3e6cb;
+                                        @elseif ($obs->status === 'Rejected')
+                                            color: #721c24; background: #f8d7da; border: 1px solid #f5c6cb;
+                                        @else
+                                            color: #8a6d3b; background: #fcf8e3; border: 1px solid #faf2cc;
+                                        @endif
+                                    ">
+                                        {{ $obs->status }}
+                                    </span>
+                                </td>
+                                <td style="padding: 10px; color: #555;">
+                                    @if($obs->status !== 'Pending')
+                                        <strong>{{ $obs->reviewer ? $obs->reviewer->full_name : 'Researcher' }}:</strong>
+                                        <span style="font-style: italic;">"{{ $obs->review_comment ?? 'No comment provided' }}"</span>
+                                    @else
+                                        <span style="color: #999;">Awaiting review</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" style="padding: 20px; text-align: center; color: #666;">You haven't submitted any observation reports yet.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -382,6 +434,54 @@
                 <div>
                     <label for="description" style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #333;">Text Observations & Details <span style="color: red;">*</span></label>
                     <textarea id="description" name="description" placeholder="Describe the health status, canopy density, soil conditions, tree damage, or other text observations..." rows="4" style="width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 13px; box-sizing: border-box; resize: vertical;" required></textarea>
+                </div>
+
+                <!-- Quantitative Metrics (Climate & Vegetation) -->
+                <div style="border-top: 1px solid #eee; padding-top: 15px; margin-top: 5px;">
+                    <h4 style="margin: 0 0 10px 0; color: #1e5631; font-size: 14px; font-weight: bold;">Quantitative Field Metrics (Optional)</h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label for="temperature_celsius" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #333;">Temperature (°C)</label>
+                            <input type="number" step="0.1" min="-10" max="60" id="temperature_celsius" name="temperature_celsius" placeholder="e.g. 24.5" style="width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 13px; box-sizing: border-box; height: 35px;">
+                        </div>
+                        <div>
+                            <label for="rainfall_mm" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #333;">Rainfall (mm)</label>
+                            <input type="number" step="0.1" min="0" max="5000" id="rainfall_mm" name="rainfall_mm" placeholder="e.g. 150.2" style="width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 13px; box-sizing: border-box; height: 35px;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label for="humidity_percent" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #333;">Humidity (%)</label>
+                            <input type="number" step="0.1" min="0" max="100" id="humidity_percent" name="humidity_percent" placeholder="e.g. 65.0" style="width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 13px; box-sizing: border-box; height: 35px;">
+                        </div>
+                        <div>
+                            <label for="drought_index" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #333;">Drought Index</label>
+                            <input type="number" step="0.1" min="0" max="10" id="drought_index" name="drought_index" placeholder="e.g. 2.5 (0-10 scale)" style="width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 13px; box-sizing: border-box; height: 35px;">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label for="ndvi_value" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #333;">NDVI (-1.0 to 1.0)</label>
+                            <input type="number" step="0.001" min="-1" max="1" id="ndvi_value" name="ndvi_value" placeholder="e.g. 0.452" style="width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 13px; box-sizing: border-box; height: 35px;">
+                        </div>
+                        <div>
+                            <label for="vegetation_cover_percent" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #333;">Veg Cover (%)</label>
+                            <input type="number" step="0.1" min="0" max="100" id="vegetation_cover_percent" name="vegetation_cover_percent" placeholder="e.g. 75.5" style="width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 13px; box-sizing: border-box; height: 35px;">
+                        </div>
+                        <div>
+                            <label for="vegetation_condition" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px; color: #333;">Veg Condition</label>
+                            <select id="vegetation_condition" name="vegetation_condition" style="width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: #fff; height: 35px;">
+                                <option value="">-- Select --</option>
+                                <option value="Healthy">Healthy</option>
+                                <option value="Moderate">Moderate</option>
+                                <option value="Stressed">Stressed</option>
+                                <option value="Degraded">Degraded</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">

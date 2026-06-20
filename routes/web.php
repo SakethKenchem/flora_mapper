@@ -47,9 +47,11 @@ Route::middleware('auth')->group(function () {
     // General Public Area
     Route::middleware('role:GENERAL_PUBLIC,RESEARCHER,SYSTEM_ADMINISTRATOR')->group(function () {
         Route::get('/public/dashboard', function () {
-            $myObservationsCount = \App\Models\ObservationReport::where('public_id', auth()->id())->count();
+            $user = auth()->user();
+            $myObservations = \App\Models\ObservationReport::where('public_id', $user->user_id)->latest()->get();
+            $myObservationsCount = $myObservations->count();
             $registeredFlora = \App\Models\Flora::select('flora_id', 'scientific_name', 'common_name')->get();
-            return view('public.dashboard', compact('myObservationsCount', 'registeredFlora'));
+            return view('public.dashboard', compact('myObservations', 'myObservationsCount', 'registeredFlora'));
         })->name('public.dashboard');
 
         // Submit observation report

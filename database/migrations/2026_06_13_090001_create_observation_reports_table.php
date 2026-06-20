@@ -28,6 +28,14 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('image_path', 255)->nullable();
             
+            $table->decimal('temperature_celsius', 5, 2)->nullable();
+            $table->decimal('rainfall_mm', 6, 2)->nullable();
+            $table->decimal('humidity_percent', 5, 2)->nullable();
+            $table->decimal('drought_index', 4, 2)->nullable();
+            $table->decimal('ndvi_value', 4, 3)->nullable();
+            $table->decimal('vegetation_cover_percent', 5, 2)->nullable();
+            $table->string('vegetation_condition', 50)->nullable();
+
             $table->date('date_observed');
             $table->dateTime('submission_date');
             

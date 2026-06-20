@@ -656,6 +656,15 @@
 
                     document.getElementById('obs-description').innerText = obs.description;
                     
+                    // Quantitative metrics population
+                    document.getElementById('obs-temp').innerText = obs.temperature_celsius !== null && obs.temperature_celsius !== undefined ? `${obs.temperature_celsius} °C` : 'N/A';
+                    document.getElementById('obs-rain').innerText = obs.rainfall_mm !== null && obs.rainfall_mm !== undefined ? `${obs.rainfall_mm} mm` : 'N/A';
+                    document.getElementById('obs-humidity').innerText = obs.humidity_percent !== null && obs.humidity_percent !== undefined ? `${obs.humidity_percent} %` : 'N/A';
+                    document.getElementById('obs-drought').innerText = obs.drought_index !== null && obs.drought_index !== undefined ? obs.drought_index : 'N/A';
+                    document.getElementById('obs-ndvi').innerText = obs.ndvi_value !== null && obs.ndvi_value !== undefined ? obs.ndvi_value : 'N/A';
+                    document.getElementById('obs-veg-cover').innerText = obs.vegetation_cover_percent !== null && obs.vegetation_cover_percent !== undefined ? `${obs.vegetation_cover_percent} %` : 'N/A';
+                    document.getElementById('obs-veg-condition').innerText = obs.vegetation_condition !== null && obs.vegetation_condition !== undefined ? obs.vegetation_condition : 'N/A';
+                    
                     // Observer details
                     if (obs.observer) {
                         document.getElementById('obs-observer-name').innerText = obs.observer.full_name;
@@ -835,6 +844,28 @@
                     <div style="display: flex; flex-direction: column; gap: 15px;">
                         <h4 style="margin: 0 0 5px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Submitted Image</h4>
                         <div id="obs-image-container" style="text-align: center;"></div>
+                    </div>
+                </div>
+
+                <!-- Quantitative Metrics Table -->
+                <div style="margin-bottom: 20px;">
+                    <h4 style="margin: 15px 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Quantitative Field Metrics</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #fafdfb; border: 1px solid #e2e8f0; padding: 15px; border-radius: 4px;">
+                        <div>
+                            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b; width: 50%;">Temperature:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-temp">N/A</td></tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Rainfall:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-rain">N/A</td></tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Humidity:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-humidity">N/A</td></tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Drought Index:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-drought">N/A</td></tr>
+                            </table>
+                        </div>
+                        <div>
+                            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b; width: 50%;">NDVI Value:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-ndvi">N/A</td></tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Veg Cover:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-veg-cover">N/A</td></tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Veg Condition:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-veg-condition">N/A</td></tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
