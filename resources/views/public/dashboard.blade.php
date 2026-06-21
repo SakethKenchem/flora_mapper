@@ -423,7 +423,7 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div>
                         <label for="location" style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #333;">Location / Region <span style="color: red;">*</span></label>
-                        <input type="text" id="location" name="location" placeholder="e.g. Mau Forest Block B" style="width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 13px; box-sizing: border-box; height: 35px;" required>
+                        <input type="text" id="location" name="location" placeholder="e.g. Mau Forest Complex Block B" style="width: 100%; padding: 8px; border: 1px solid #cccccc; border-radius: 4px; font-size: 13px; box-sizing: border-box; height: 35px;" required>
                     </div>
                     <div>
                         <label for="date_observed" style="display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #333;">Date Observed <span style="color: red;">*</span></label>

@@ -312,7 +312,7 @@
                 <strong>CSV File Format Requirements:</strong>
                 <p>The first line of the file must be the header. Required columns are case-insensitive:</p>
                 <ul>
-                    <li><code>region_name</code>: Must match one of our seeded regions exactly (e.g. <strong>Mau Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>, <strong>Tsavo East</strong>).</li>
+                    <li><code>region_name</code>: Must match one of our seeded regions exactly (e.g. <strong>Mau Forest Complex</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya region</strong>, <strong>Turkana</strong>).</li>
                     <li><code>record_date</code>: In YYYY-MM-DD format.</li>
                     <li><code>temperature_celsius</code>: Temperature value (decimal).</li>
                     <li><code>rainfall_mm</code>: Rainfall amount (decimal).</li>
@@ -320,7 +320,7 @@
                 </ul>
                 <strong>Example Format:</strong>
                 <pre>region_name,record_date,temperature_celsius,rainfall_mm,humidity_percent,drought_index,flood_risk_level
-Mau Forest,2026-01-01,21.40,132.50,78.00,0.25,Low
+Mau Forest Complex,2026-01-01,21.40,132.50,78.00,0.25,Low
 Tana Delta,2026-01-01,28.60,61.30,69.10,0.65,High</pre>
             </div>
         </div>

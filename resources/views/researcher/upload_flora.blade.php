@@ -329,9 +329,7 @@
                 <p>The first line of the file must be the header. Required columns are case-insensitive:</p>
                 <ul>
                     <li><code>scientific_name</code>: The scientific classification of the species (Required).</li>
-                    <li><code>region_name</code>: Optional. If it matches one of our regions exactly (e.g. <strong>Mau
-                            Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>,
-                        <strong>Tsavo East</strong>), the record will be linked to that region.
+                    <li><code>region_name</code>: Optional. If it matches one of our regions exactly (e.g. <strong>Mau Forest Complex</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya region</strong>, <strong>Turkana</strong>), the record will be linked to that region.
                     </li>
                     <li>Optional columns: <code>common_name</code>, <code>species_type</code>,
                         <code>conservation_status</code>, <code>habitat_type</code>, <code>vulnerability_level</code>.
@@ -339,7 +337,7 @@
                 </ul>
                 <strong>Example Format:</strong>
                 <pre>region_name,scientific_name,common_name,species_type,conservation_status,habitat_type,vulnerability_level
-Mau Forest,Ficus sycomorus,Sycamore Fig,Tree,Least Concern,Montane Forest,Low
+Mau Forest Complex,Ficus sycomorus,Sycamore Fig,Tree,Least Concern,Montane Forest,Low
 Tana Delta,Rhizophora mucronata,Red Mangrove,Mangrove,Near Threatened,Estuary/Mangrove,High</pre>
             </div>
         </div>

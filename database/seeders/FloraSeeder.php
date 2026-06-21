@@ -15,7 +15,7 @@ class FloraSeeder extends Seeder
         DB::table('flora')->insert([
             [
                 'flora_id' => 1,
-                'region_id' => 1, // Mau Forest
+                'region_id' => 1, // Mau Forest Complex
                 'scientific_name' => 'Ficus sycomorus',
                 'common_name' => 'Sycamore Fig',
                 'species_type' => 'Tree',
@@ -39,7 +39,7 @@ class FloraSeeder extends Seeder
             ],
             [
                 'flora_id' => 3,
-                'region_id' => 3, // Mt. Kenya Region
+                'region_id' => 3, // Mt. Kenya region
                 'scientific_name' => 'Olea europaea subsp. cuspidata',
                 'common_name' => 'African Wild Olive',
                 'species_type' => 'Tree',

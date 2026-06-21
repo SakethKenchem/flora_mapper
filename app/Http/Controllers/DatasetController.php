@@ -526,7 +526,7 @@ class DatasetController extends Controller
                 'flora_name' => $observation->flora_name,
                 'location' => $observation->location,
                 'description' => $observation->description,
-                'image_url' => $observation->image_path ? Storage::url($observation->image_path) : null,
+                'image_url' => $observation->image_path ? asset('storage/' . $observation->image_path) : null,
                 'temperature_celsius' => $observation->temperature_celsius,
                 'rainfall_mm' => $observation->rainfall_mm,
                 'humidity_percent' => $observation->humidity_percent,

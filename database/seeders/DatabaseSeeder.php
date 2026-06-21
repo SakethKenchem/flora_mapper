@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('Password123'),
             'phone_number' => '+254734567890',
             'account_status' => 'Active',
-            'preferred_region' => 'Mau Forest',
+            'preferred_region' => 'Mau Forest Complex',
         ]);
 
         // Seed regions and default rules

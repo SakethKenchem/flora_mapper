@@ -320,9 +320,7 @@
                 <strong>CSV File Format Requirements:</strong>
                 <p>The first line of the file must be the header. Required columns are case-insensitive:</p>
                 <ul>
-                    <li><code>region_name</code>: Must match one of our seeded regions exactly (e.g. <strong>Mau
-                            Forest</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya Region</strong>,
-                        <strong>Tsavo East</strong>).</li>
+                    <li><code>region_name</code>: Must match one of our seeded regions exactly (e.g. <strong>Mau Forest Complex</strong>, <strong>Tana Delta</strong>, <strong>Mt. Kenya region</strong>, <strong>Turkana</strong>).</li>
                     <li><code>record_date</code>: In YYYY-MM-DD format.</li>
                     <li><code>ndvi_value</code>: Normalized Difference Vegetation Index (typically between 0.000 and
                         1.000).</li>
@@ -331,7 +329,7 @@
                 </ul>
                 <strong>Example Format:</strong>
                 <pre>region_name,record_date,ndvi_value,vegetation_cover_percent,vegetation_condition,data_source
-Mau Forest,2026-01-01,0.721,78.50,Healthy,Sentinel
+Mau Forest Complex,2026-01-01,0.721,78.50,Healthy,Sentinel
 Tana Delta,2026-01-01,0.482,52.10,Moderate,MODIS</pre>
             </div>
         </div>

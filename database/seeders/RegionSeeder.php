@@ -15,8 +15,8 @@ class RegionSeeder extends Seeder
         DB::table('regions')->insert([
             [
                 'region_id' => 1,
-                'region_name' => 'Mau Forest',
-                'county' => 'Nakuru/Narok',
+                'region_name' => 'Mau Forest Complex',
+                'county' => 'Nakuru/Narok/Kericho',
                 'ecosystem_type' => 'Montane Forest',
                 'latitude' => -0.6030,
                 'longitude' => 35.8360,
@@ -37,7 +37,7 @@ class RegionSeeder extends Seeder
             ],
             [
                 'region_id' => 3,
-                'region_name' => 'Mt. Kenya Region',
+                'region_name' => 'Mt. Kenya region',
                 'county' => 'Nyeri/Meru/Kirinyaga',
                 'ecosystem_type' => 'Alpine/Montane Forest',
                 'latitude' => -0.1522,
@@ -48,12 +48,12 @@ class RegionSeeder extends Seeder
             ],
             [
                 'region_id' => 4,
-                'region_name' => 'Tsavo East',
-                'county' => 'Taita Taveta',
-                'ecosystem_type' => 'Savannah',
-                'latitude' => -2.7844,
-                'longitude' => 38.7656,
-                'description' => 'Semi-arid savannah ecosystem highly sensitive to severe droughts and rainfall shortages.',
+                'region_name' => 'Turkana',
+                'county' => 'Turkana',
+                'ecosystem_type' => 'Arid/Semi-Arid Scrubland',
+                'latitude' => 3.1200,
+                'longitude' => 35.6000,
+                'description' => 'Arid and semi-arid savannah and scrubland ecosystem highly vulnerable to prolonged drought and water scarcity.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

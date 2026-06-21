@@ -176,7 +176,7 @@
             @if (Auth::user()->isPublic())
                 <div class="form-group">
                     <label for="preferred_region">Preferred Observation Region</label>
-                    <input type="text" id="preferred_region" name="preferred_region" class="form-control" placeholder="e.g. Mau Forest, Tana Delta..." value="{{ old('preferred_region', Auth::user()->preferred_region) }}">
+                    <input type="text" id="preferred_region" name="preferred_region" class="form-control" placeholder="e.g. Mau Forest Complex, Tana Delta..." value="{{ old('preferred_region', Auth::user()->preferred_region) }}">
                 </div>
             @endif
 

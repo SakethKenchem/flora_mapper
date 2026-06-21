@@ -1,10 +1,13 @@
 region_name,record_date,ndvi_value,vegetation_cover_percent,vegetation_condition,data_source
-Mau Forest,2026-06-01,0.720,85.5,Good,Landsat 8
-Mau Forest,2026-06-02,0.740,88.0,Excellent,Landsat 8
-Mau Forest,2026-06-03,0.710,84.0,Good,Landsat 8
+Mau Forest Complex,2026-06-01,0.720,85.5,Good,Landsat 8
+Mau Forest Complex,2026-06-02,0.740,88.0,Excellent,Landsat 8
+Mau Forest Complex,2026-06-03,0.710,84.0,Good,Landsat 8
 Tana Delta,2026-06-01,0.320,35.2,Poor,Sentinel-2
 Tana Delta,2026-06-02,0.300,32.0,Critical,Sentinel-2
 Tana Delta,2026-06-03,0.340,38.5,Poor,Sentinel-2
-Mt. Kenya Region,2026-06-01,0.680,78.0,Good,Landsat 8
-Mt. Kenya Region,2026-06-02,0.650,75.4,Fair,Landsat 8
-Mt. Kenya Region,2026-06-03,0.690,80.2,Good,Landsat 8
+Mt. Kenya region,2026-06-01,0.680,78.0,Good,Landsat 8
+Mt. Kenya region,2026-06-02,0.650,75.4,Fair,Landsat 8
+Mt. Kenya region,2026-06-03,0.690,80.2,Good,Landsat 8
+Turkana,2026-06-01,0.180,12.5,Stressed,Sentinel-2
+Turkana,2026-06-02,0.170,11.0,Degraded,Sentinel-2
+Turkana,2026-06-03,0.190,13.5,Stressed,Sentinel-2
