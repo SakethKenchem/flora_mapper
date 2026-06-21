@@ -284,9 +284,6 @@
                     <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI
                         Data</a>
                 </li>
-                <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload Flora Data</a>
-                </li>
             </ul>
 
             <div class="menu-label">Assessments</div>
@@ -299,7 +296,7 @@
             <div class="menu-label">Flora & Reports</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.flora.create') }}" class="menu-link">Add Flora Record</a>
+                    <a href="{{ route('researcher.flora.manage') }}" class="menu-link">Flora Registry</a>
                 </li>
                 <li class="menu-item">
                     <a href="#" class="menu-link">Reports Manager</a>
@@ -398,7 +395,9 @@
                                     </td>
                                     <td>
                                         @if ($obs->status === 'Pending')
-                                            <form method="POST" action="{{ route('researcher.observations.review', $obs->observation_id) }}" style="margin: 0;">
+                                            <form method="POST"
+                                                action="{{ route('researcher.observations.review', $obs->observation_id) }}"
+                                                style="margin: 0;">
                                                 @csrf
                                                 <div style="margin-bottom: 5px;">
                                                     <input type="text" name="review_comment"
@@ -428,7 +427,11 @@
                                                 @endif
                                             </div>
                                         @endif
-                                        <button type="button" onclick="openObservationModal({{ $obs->observation_id }})" class="btn-action" style="background: #f4f6f4; border: 1px solid #c8d2c8; color: #1e5631; padding: 4px 8px; font-size: 10px; width: 100%; text-align: center; margin-top: 5px; box-sizing: border-box;">View Full Details & CSV</button>
+                                        <button type="button"
+                                            onclick="openObservationModal({{ $obs->observation_id }})"
+                                            class="btn-action"
+                                            style="background: #f4f6f4; border: 1px solid #c8d2c8; color: #1e5631; padding: 4px 8px; font-size: 10px; width: 100%; text-align: center; margin-top: 5px; box-sizing: border-box;">View
+                                            Full Details & CSV</button>
                                     </td>
                                 </tr>
                             @empty
@@ -470,7 +473,7 @@
                 return;
             }
 
-            map = L.map(mapElement).setView([-1.2921, 36.8219], 5.5);
+            map = L.map(mapElement).setView([0.0236, 37.9062], 6);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
@@ -595,7 +598,7 @@
                     let vegHtml = '';
                     if (data.vegetation.length === 0) {
                         vegHtml =
-                        '<p style="color: #666666; font-style: italic; margin: 0;">No vegetation records.</p>';
+                            '<p style="color: #666666; font-style: italic; margin: 0;">No vegetation records.</p>';
                     } else {
                         vegHtml =
                             '<table style="width:100%; border-collapse:collapse; font-size:11px;"><thead><tr style="border-bottom:1px solid #ddd; text-align:left;"><th>Date</th><th>NDVI</th><th>Cover</th><th>Condition</th></tr></thead><tbody>';
@@ -631,13 +634,13 @@
                 .then(res => res.json())
                 .then(data => {
                     const obs = data.observation;
-                    
+
                     document.getElementById('obs-flora-name').innerText = obs.flora_name;
                     document.getElementById('obs-location').innerText = obs.location;
                     document.getElementById('obs-date-observed').innerText = obs.date_observed;
                     document.getElementById('obs-date-submitted').innerText = obs.submission_date;
                     document.getElementById('obs-status').innerText = obs.status;
-                    
+
                     // Style status badge inside modal
                     const statusSpan = document.getElementById('obs-status');
                     if (obs.status === 'Approved') {
@@ -655,16 +658,23 @@
                     }
 
                     document.getElementById('obs-description').innerText = obs.description;
-                    
+
                     // Quantitative metrics population
-                    document.getElementById('obs-temp').innerText = obs.temperature_celsius !== null && obs.temperature_celsius !== undefined ? `${obs.temperature_celsius} °C` : 'N/A';
-                    document.getElementById('obs-rain').innerText = obs.rainfall_mm !== null && obs.rainfall_mm !== undefined ? `${obs.rainfall_mm} mm` : 'N/A';
-                    document.getElementById('obs-humidity').innerText = obs.humidity_percent !== null && obs.humidity_percent !== undefined ? `${obs.humidity_percent} %` : 'N/A';
-                    document.getElementById('obs-drought').innerText = obs.drought_index !== null && obs.drought_index !== undefined ? obs.drought_index : 'N/A';
-                    document.getElementById('obs-ndvi').innerText = obs.ndvi_value !== null && obs.ndvi_value !== undefined ? obs.ndvi_value : 'N/A';
-                    document.getElementById('obs-veg-cover').innerText = obs.vegetation_cover_percent !== null && obs.vegetation_cover_percent !== undefined ? `${obs.vegetation_cover_percent} %` : 'N/A';
-                    document.getElementById('obs-veg-condition').innerText = obs.vegetation_condition !== null && obs.vegetation_condition !== undefined ? obs.vegetation_condition : 'N/A';
-                    
+                    document.getElementById('obs-temp').innerText = obs.temperature_celsius !== null && obs
+                        .temperature_celsius !== undefined ? `${obs.temperature_celsius} °C` : 'N/A';
+                    document.getElementById('obs-rain').innerText = obs.rainfall_mm !== null && obs.rainfall_mm !==
+                        undefined ? `${obs.rainfall_mm} mm` : 'N/A';
+                    document.getElementById('obs-humidity').innerText = obs.humidity_percent !== null && obs
+                        .humidity_percent !== undefined ? `${obs.humidity_percent} %` : 'N/A';
+                    document.getElementById('obs-drought').innerText = obs.drought_index !== null && obs
+                        .drought_index !== undefined ? obs.drought_index : 'N/A';
+                    document.getElementById('obs-ndvi').innerText = obs.ndvi_value !== null && obs.ndvi_value !==
+                        undefined ? obs.ndvi_value : 'N/A';
+                    document.getElementById('obs-veg-cover').innerText = obs.vegetation_cover_percent !== null && obs
+                        .vegetation_cover_percent !== undefined ? `${obs.vegetation_cover_percent} %` : 'N/A';
+                    document.getElementById('obs-veg-condition').innerText = obs.vegetation_condition !== null && obs
+                        .vegetation_condition !== undefined ? obs.vegetation_condition : 'N/A';
+
                     // Observer details
                     if (obs.observer) {
                         document.getElementById('obs-observer-name').innerText = obs.observer.full_name;
@@ -679,20 +689,25 @@
                     // Render supporting image
                     const imgContainer = document.getElementById('obs-image-container');
                     if (obs.image_url) {
-                        imgContainer.innerHTML = `<img src="${obs.image_url}" alt="Observation Image" style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #ddd; object-fit: cover;">`;
+                        imgContainer.innerHTML =
+                            `<img src="${obs.image_url}" alt="Observation Image" style="max-width: 100%; max-height: 250px; border-radius: 4px; border: 1px solid #ddd; object-fit: cover;">`;
                     } else {
-                        imgContainer.innerHTML = '<div style="background: #f1f5f9; border: 1px dashed #cbd5e1; height: 150px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 12px;">No image uploaded</div>';
+                        imgContainer.innerHTML =
+                            '<div style="background: #f1f5f9; border: 1px dashed #cbd5e1; height: 150px; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 12px;">No image uploaded</div>';
                     }
 
                     // Parse and display CSV Preview Table
                     const csvContainer = document.getElementById('obs-csv-container');
                     if (data.csv_data && data.csv_data.headers && data.csv_data.headers.length > 0) {
-                        let tableHtml = '<div style="overflow-x: auto; max-height: 200px; border: 1px solid #e2e8f0; border-radius: 4px;"><table style="width:100%; border-collapse:collapse; font-size:11px; text-align:left;">';
-                        
+                        let tableHtml =
+                            '<div style="overflow-x: auto; max-height: 200px; border: 1px solid #e2e8f0; border-radius: 4px;"><table style="width:100%; border-collapse:collapse; font-size:11px; text-align:left;">';
+
                         // Table Headers
-                        tableHtml += '<thead><tr style="background:#f8fafc; border-bottom:2px solid #cbd5e1; position:sticky; top:0;">';
+                        tableHtml +=
+                            '<thead><tr style="background:#f8fafc; border-bottom:2px solid #cbd5e1; position:sticky; top:0;">';
                         data.csv_data.headers.forEach(header => {
-                            tableHtml += `<th style="padding:8px; border-bottom:1px solid #cbd5e1; font-weight:bold; color:#334155;">${header}</th>`;
+                            tableHtml +=
+                                `<th style="padding:8px; border-bottom:1px solid #cbd5e1; font-weight:bold; color:#334155;">${header}</th>`;
                         });
                         tableHtml += '</tr></thead><tbody>';
 
@@ -708,7 +723,8 @@
                         tableHtml += '</tbody></table></div>';
                         csvContainer.innerHTML = tableHtml;
                     } else {
-                        csvContainer.innerHTML = '<div style="background: #f1f5f9; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 4px; text-align: center; color: #64748b; font-size: 12px;">No CSV dataset preview available</div>';
+                        csvContainer.innerHTML =
+                            '<div style="background: #f1f5f9; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 4px; text-align: center; color: #64748b; font-size: 12px;">No CSV dataset preview available</div>';
                     }
 
                     // Action / Review box
@@ -741,7 +757,8 @@
                 })
                 .catch(err => {
                     console.error("Error loading observation details:", err);
-                    document.getElementById('obs-modal-loading').innerHTML = '<span style="color:red; font-weight:bold;">Error loading details. Please close and try again.</span>';
+                    document.getElementById('obs-modal-loading').innerHTML =
+                        '<span style="color:red; font-weight:bold;">Error loading details. Please close and try again.</span>';
                 });
         }
 
@@ -806,87 +823,175 @@
     </div>
 
     <!-- Observation Report Details Modal -->
-    <div id="observation-details-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(2px);">
-        <div style="background: white; border: 1px solid #cccccc; border-radius: 6px; width: 100%; max-width: 800px; max-height: 90%; overflow-y: auto; padding: 25px; box-sizing: border-box; position: relative; font-family: Arial, sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
-            <button onclick="closeObservationModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; font-weight: bold; cursor: pointer; color: #666666;">&times;</button>
-            
-            <h2 style="margin-top: 0; color: #1e5631; border-bottom: 2px solid #1e5631; padding-bottom: 8px; font-size: 18px; font-weight: bold;">Public Observation Report Details</h2>
-            
+    <div id="observation-details-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(2px);">
+        <div
+            style="background: white; border: 1px solid #cccccc; border-radius: 6px; width: 100%; max-width: 800px; max-height: 90%; overflow-y: auto; padding: 25px; box-sizing: border-box; position: relative; font-family: Arial, sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+            <button onclick="closeObservationModal()"
+                style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; font-weight: bold; cursor: pointer; color: #666666;">&times;</button>
+
+            <h2
+                style="margin-top: 0; color: #1e5631; border-bottom: 2px solid #1e5631; padding-bottom: 8px; font-size: 18px; font-weight: bold;">
+                Public Observation Report Details</h2>
+
             <div id="obs-modal-loading" style="text-align: center; padding: 40px 0; color: #666; font-size: 14px;">
-                <div style="display: inline-block; width: 30px; height: 30px; border: 3px solid rgba(30,86,49,0.1); border-radius: 50%; border-top-color: #1e5631; animation: spin 1s ease-in-out infinite; margin-bottom: 10px;"></div>
-                <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+                <div
+                    style="display: inline-block; width: 30px; height: 30px; border: 3px solid rgba(30,86,49,0.1); border-radius: 50%; border-top-color: #1e5631; animation: spin 1s ease-in-out infinite; margin-bottom: 10px;">
+                </div>
+                <style>
+                    @keyframes spin {
+                        to {
+                            transform: rotate(360deg);
+                        }
+                    }
+                </style>
                 <div>Loading observation data...</div>
             </div>
-            
+
             <div id="obs-modal-content" style="display: none;">
                 <!-- Main Grid Split -->
                 <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; margin-bottom: 20px;">
                     <div>
                         <!-- Details Table -->
                         <table style="width: 100%; font-size: 12px; margin-bottom: 15px; border-collapse: collapse;">
-                            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b; width: 35%;">Flora Name:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631; font-size: 14px;" id="obs-flora-name"></td></tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Region / Location:</td><td style="padding: 6px 0;" id="obs-location"></td></tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Date Observed:</td><td style="padding: 6px 0;" id="obs-date-observed"></td></tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Date Submitted:</td><td style="padding: 6px 0;" id="obs-date-submitted"></td></tr>
-                            <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Report Status:</td><td style="padding: 6px 0;"><span id="obs-status" style="font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 11px;"></span></td></tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 0; font-weight: bold; color: #64748b; width: 35%;">Flora Name:
+                                </td>
+                                <td style="padding: 6px 0; font-weight: bold; color: #1e5631; font-size: 14px;"
+                                    id="obs-flora-name"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 0; font-weight: bold; color: #64748b;">Region / Location:</td>
+                                <td style="padding: 6px 0;" id="obs-location"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 0; font-weight: bold; color: #64748b;">Date Observed:</td>
+                                <td style="padding: 6px 0;" id="obs-date-observed"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 0; font-weight: bold; color: #64748b;">Date Submitted:</td>
+                                <td style="padding: 6px 0;" id="obs-date-submitted"></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 6px 0; font-weight: bold; color: #64748b;">Report Status:</td>
+                                <td style="padding: 6px 0;"><span id="obs-status"
+                                        style="font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 11px;"></span>
+                                </td>
+                            </tr>
                         </table>
-                        
+
                         <!-- Observer Info -->
-                        <h4 style="margin: 15px 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Observer Information</h4>
+                        <h4
+                            style="margin: 15px 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+                            Observer Information</h4>
                         <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
-                            <tr><td style="padding: 4px 0; font-weight: bold; color: #64748b; width: 35%;">Full Name:</td><td style="padding: 4px 0;" id="obs-observer-name"></td></tr>
-                            <tr><td style="padding: 4px 0; font-weight: bold; color: #64748b;">Email Address:</td><td style="padding: 4px 0;" id="obs-observer-email"></td></tr>
-                            <tr><td style="padding: 4px 0; font-weight: bold; color: #64748b;">Phone Number:</td><td style="padding: 4px 0;" id="obs-observer-phone"></td></tr>
+                            <tr>
+                                <td style="padding: 4px 0; font-weight: bold; color: #64748b; width: 35%;">Full Name:
+                                </td>
+                                <td style="padding: 4px 0;" id="obs-observer-name"></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px 0; font-weight: bold; color: #64748b;">Email Address:</td>
+                                <td style="padding: 4px 0;" id="obs-observer-email"></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 4px 0; font-weight: bold; color: #64748b;">Phone Number:</td>
+                                <td style="padding: 4px 0;" id="obs-observer-phone"></td>
+                            </tr>
                         </table>
                     </div>
-                    
+
                     <!-- Right Column: Image and Actions -->
                     <div style="display: flex; flex-direction: column; gap: 15px;">
-                        <h4 style="margin: 0 0 5px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Submitted Image</h4>
+                        <h4
+                            style="margin: 0 0 5px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+                            Submitted Image</h4>
                         <div id="obs-image-container" style="text-align: center;"></div>
                     </div>
                 </div>
 
                 <!-- Quantitative Metrics Table -->
                 <div style="margin-bottom: 20px;">
-                    <h4 style="margin: 15px 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Quantitative Field Metrics</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #fafdfb; border: 1px solid #e2e8f0; padding: 15px; border-radius: 4px;">
+                    <h4
+                        style="margin: 15px 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+                        Quantitative Field Metrics</h4>
+                    <div
+                        style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #fafdfb; border: 1px solid #e2e8f0; padding: 15px; border-radius: 4px;">
                         <div>
                             <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
-                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b; width: 50%;">Temperature:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-temp">N/A</td></tr>
-                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Rainfall:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-rain">N/A</td></tr>
-                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Humidity:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-humidity">N/A</td></tr>
-                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Drought Index:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-drought">N/A</td></tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 6px 0; font-weight: bold; color: #64748b; width: 50%;">
+                                        Temperature:</td>
+                                    <td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-temp">N/A
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 6px 0; font-weight: bold; color: #64748b;">Rainfall:</td>
+                                    <td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-rain">N/A
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 6px 0; font-weight: bold; color: #64748b;">Humidity:</td>
+                                    <td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-humidity">
+                                        N/A</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 6px 0; font-weight: bold; color: #64748b;">Drought Index:</td>
+                                    <td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-drought">
+                                        N/A</td>
+                                </tr>
                             </table>
                         </div>
                         <div>
                             <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
-                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b; width: 50%;">NDVI Value:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-ndvi">N/A</td></tr>
-                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Veg Cover:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-veg-cover">N/A</td></tr>
-                                <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 6px 0; font-weight: bold; color: #64748b;">Veg Condition:</td><td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-veg-condition">N/A</td></tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 6px 0; font-weight: bold; color: #64748b; width: 50%;">NDVI
+                                        Value:</td>
+                                    <td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-ndvi">N/A
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 6px 0; font-weight: bold; color: #64748b;">Veg Cover:</td>
+                                    <td style="padding: 6px 0; font-weight: bold; color: #1e5631;" id="obs-veg-cover">
+                                        N/A</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 6px 0; font-weight: bold; color: #64748b;">Veg Condition:</td>
+                                    <td style="padding: 6px 0; font-weight: bold; color: #1e5631;"
+                                        id="obs-veg-condition">N/A</td>
+                                </tr>
                             </table>
                         </div>
                     </div>
                 </div>
 
                 <!-- Text-based observations -->
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px;">Observation Text & Field Notes</h4>
-                    <p id="obs-description" style="margin: 0; font-size: 12px; line-height: 1.5; color: #334155; white-space: pre-line;"></p>
+                <div
+                    style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 15px; margin-bottom: 20px;">
+                    <h4
+                        style="margin: 0 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px;">
+                        Observation Text & Field Notes</h4>
+                    <p id="obs-description"
+                        style="margin: 0; font-size: 12px; line-height: 1.5; color: #334155; white-space: pre-line;">
+                    </p>
                 </div>
 
                 <!-- CSV Preview Section -->
                 <div style="margin-bottom: 20px;">
-                    <h4 style="margin: 0 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Supporting Dataset Preview (CSV)</h4>
+                    <h4
+                        style="margin: 0 0 8px 0; color: #1e5631; font-size: 13px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">
+                        Supporting Dataset Preview (CSV)</h4>
                     <div id="obs-csv-container"></div>
                 </div>
-                
+
                 <!-- Action Review Box -->
                 <div id="obs-action-container" style="margin-top: 20px;"></div>
             </div>
-            
+
             <div style="margin-top: 20px; text-align: right; border-top: 1px solid #eeeeee; padding-top: 15px;">
-                <button onclick="closeObservationModal()" style="background: #e2e8f0; border: 1px solid #cccccc; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: #333333;">Close Details</button>
+                <button onclick="closeObservationModal()"
+                    style="background: #e2e8f0; border: 1px solid #cccccc; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: #333333;">Close
+                    Details</button>
             </div>
         </div>
     </div>
