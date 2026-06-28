@@ -247,7 +247,7 @@
                     <a href="{{ route('researcher.flora.manage') }}" class="menu-link">Flora Registry</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link">Reports Manager</a>
+                    <a href="{{ route('researcher.reports') }}" class="menu-link">Reports Manager</a>
                 </li>
             </ul>
         </div>

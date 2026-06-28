@@ -833,4 +833,124 @@ class DatasetController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    // Reports Manager index view
+    public function showReports()
+    {
+        $reports = Report::with('creator')->latest()->get();
+        return view('researcher.reports', compact('reports'));
+    }
+
+    // View specific report in JSON for modal display
+    public function viewReport($reportId)
+    {
+        $report = Report::with('creator')->findOrFail($reportId);
+        return response()->json([
+            'report' => $report,
+            'formatted_date' => $report->created_at ? $report->created_at->format('Y-m-d H:i:s') : 'N/A'
+        ]);
+    }
+
+    // Generate analytical report
+    public function generateReport(Request $request)
+    {
+        $request->validate([
+            'report_title' => 'required|string|max:150',
+            'report_type' => 'required|in:vulnerability_summary,observations_summary',
+        ]);
+
+        $content = '';
+
+        if ($request->report_type === 'vulnerability_summary') {
+            $assessments = VulnerabilityAssessment::with('region')->latest()->get();
+            $totalAssessments = $assessments->count();
+            $highCount = $assessments->where('vulnerability_level', 'High')->count();
+            $modCount = $assessments->where('vulnerability_level', 'Moderate')->count();
+            $lowCount = $assessments->where('vulnerability_level', 'Low')->count();
+
+            $content = "<h2>Ecosystem Vulnerability Analysis Summary</h2>";
+            $content .= "<p>This analytical report compiles the latest regional vulnerability evaluations executed by the research department.</p>";
+            $content .= "<h3>Executive Metrics</h3>";
+            $content .= "<ul>";
+            $content .= "<li><strong>Total Assessments Run:</strong> {$totalAssessments}</li>";
+            $content .= "<li><strong>High Vulnerability Ecosystems:</strong> {$highCount}</li>";
+            $content .= "<li><strong>Moderate Vulnerability Ecosystems:</strong> {$modCount}</li>";
+            $content .= "<li><strong>Low Vulnerability Ecosystems:</strong> {$lowCount}</li>";
+            $content .= "</ul>";
+
+            $content .= "<h3>Detailed Regional Vulnerability Breakdown</h3>";
+            $content .= "<table style='width:100%; border-collapse:collapse; margin-top:15px; font-size:13px;'>";
+            $content .= "<thead><tr style='background:#f4f6f4; text-align:left; border-bottom:2px solid #ddd;'>";
+            $content .= "<th style='padding:8px;'>Region Name</th><th style='padding:8px;'>County</th><th style='padding:8px;'>Ecosystem</th><th style='padding:8px;'>Overall Score</th><th style='padding:8px;'>Vulnerability Level</th>";
+            $content .= "</tr></thead><tbody>";
+
+            if ($assessments->isEmpty()) {
+                $content .= "<tr><td colspan='5' style='padding:8px; text-align:center; font-style:italic;'>No vulnerability assessment records found.</td></tr>";
+            } else {
+                foreach ($assessments as $ast) {
+                    $rName = $ast->region ? $ast->region->region_name : 'N/A';
+                    $rCounty = $ast->region ? $ast->region->county : 'N/A';
+                    $rEco = $ast->region ? $ast->region->ecosystem_type : 'N/A';
+                    $content .= "<tr style='border-bottom:1px solid #eee;'>";
+                    $content .= "<td style='padding:8px;'><strong>{$rName}</strong></td>";
+                    $content .= "<td style='padding:8px;'>{$rCounty}</td>";
+                    $content .= "<td style='padding:8px;'>{$rEco}</td>";
+                    $content .= "<td style='padding:8px;'>{$ast->overall_score}%</td>";
+                    $content .= "<td style='padding:8px; font-weight:bold;'>{$ast->vulnerability_level}</td>";
+                    $content .= "</tr>";
+                }
+            }
+            $content .= "</tbody></table>";
+
+        } else {
+            $totalObs = ObservationReport::count();
+            $pendingCount = ObservationReport::where('status', 'Pending')->count();
+            $appCount = ObservationReport::where('status', 'Approved')->count();
+            $rejCount = ObservationReport::where('status', 'Rejected')->count();
+
+            $content = "<h2>Public Flora Observations Queue Summary</h2>";
+            $content .= "<p>This report details public flora submissions and the current researcher audit workflow statistics.</p>";
+            $content .= "<h3>Executive Metrics</h3>";
+            $content .= "<ul>";
+            $content .= "<li><strong>Total Observations Submitted:</strong> {$totalObs}</li>";
+            $content .= "<li><strong>Pending Review:</strong> {$pendingCount}</li>";
+            $content .= "<li><strong>Approved Records:</strong> {$appCount}</li>";
+            $content .= "<li><strong>Rejected Submissions:</strong> {$rejCount}</li>";
+            $content .= "</ul>";
+
+            $content .= "<h3>Observation Records Log</h3>";
+            $content .= "<table style='width:100%; border-collapse:collapse; margin-top:15px; font-size:13px;'>";
+            $content .= "<thead><tr style='background:#f4f6f4; text-align:left; border-bottom:2px solid #ddd;'>";
+            $content .= "<th style='padding:8px;'>Flora Name</th><th style='padding:8px;'>Location</th><th style='padding:8px;'>Submission Date</th><th style='padding:8px;'>Status</th><th style='padding:8px;'>Reviewer</th>";
+            $content .= "</tr></thead><tbody>";
+
+            $observations = ObservationReport::with(['reviewer'])->latest()->take(30)->get();
+
+            if ($observations->isEmpty()) {
+                $content .= "<tr><td colspan='5' style='padding:8px; text-align:center; font-style:italic;'>No observation records found.</td></tr>";
+            } else {
+                foreach ($observations as $obs) {
+                    $revName = $obs->reviewer ? $obs->reviewer->full_name : 'Pending';
+                    $subDate = $obs->submission_date ? $obs->submission_date->format('Y-m-d') : 'N/A';
+                    $content .= "<tr style='border-bottom:1px solid #eee;'>";
+                    $content .= "<td style='padding:8px;'><strong>{$obs->flora_name}</strong></td>";
+                    $content .= "<td style='padding:8px;'>{$obs->location}</td>";
+                    $content .= "<td style='padding:8px;'>{$subDate}</td>";
+                    $content .= "<td style='padding:8px; font-weight:bold;'>{$obs->status}</td>";
+                    $content .= "<td style='padding:8px;'>{$revName}</td>";
+                    $content .= "</tr>";
+                }
+            }
+            $content .= "</tbody></table>";
+        }
+
+        Report::create([
+            'generated_by' => Auth::user()->user_id,
+            'report_title' => $request->report_title,
+            'report_type' => $request->report_type === 'vulnerability_summary' ? 'Ecosystem Vulnerability Summary' : 'Public Observations Summary',
+            'content' => $content
+        ]);
+
+        return redirect()->route('researcher.reports')->with('success', "Analytical report '{$request->report_title}' generated successfully.");
+    }
 }

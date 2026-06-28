@@ -104,6 +104,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/researcher/export/assessments', [DatasetController::class, 'exportAssessments'])->name('researcher.export.assessments');
         Route::get('/researcher/export/observations', [DatasetController::class, 'exportObservations'])->name('researcher.export.observations');
 
+        // Reports Manager
+        Route::get('/researcher/reports', [DatasetController::class, 'showReports'])->name('researcher.reports');
+        Route::post('/researcher/reports', [DatasetController::class, 'generateReport'])->name('researcher.reports.generate');
+        Route::get('/researcher/reports/{report_id}', [DatasetController::class, 'viewReport'])->name('researcher.reports.view');
+
         // Analysis console
         Route::get('/researcher/analysis', [DatasetController::class, 'showAnalysis'])->name('researcher.analysis');
         Route::post('/researcher/analysis', [DatasetController::class, 'runAnalysis'])->name('researcher.analysis.submit');
