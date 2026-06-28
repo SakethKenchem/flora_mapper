@@ -667,4 +667,63 @@ class DatasetController extends Controller
 
         return redirect()->back()->with('success', "Observation report has been successfully reviewed and marked as {$request->status}.");
     }
+
+    // Edit region details view
+    public function editRegion($regionId)
+    {
+        $region = Region::findOrFail($regionId);
+        return view('researcher.edit_region', compact('region'));
+    }
+
+    // Process region updates
+    public function updateRegion(Request $request, $regionId)
+    {
+        $region = Region::findOrFail($regionId);
+
+        $request->validate([
+            'region_name' => 'required|string|max:150',
+            'county' => 'required|string|max:150',
+            'ecosystem_type' => 'required|string|max:100',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+            'description' => 'nullable|string',
+        ]);
+
+        $region->update($request->only([
+            'region_name',
+            'county',
+            'ecosystem_type',
+            'latitude',
+            'longitude',
+            'description',
+        ]));
+
+        return redirect()->route('researcher.dashboard')->with('success', "Region '{$region->region_name}' updated successfully.");
+    }
+
+    // Compare regions side-by-side
+    public function showCompare(Request $request)
+    {
+        $regions = Region::all();
+        
+        $regionAId = $request->query('region_a');
+        $regionBId = $request->query('region_b');
+
+        $regionA = null;
+        $regionB = null;
+
+        if ($regionAId) {
+            $regionA = Region::with(['assessments' => function($q) {
+                $q->latest();
+            }])->find($regionAId);
+        }
+
+        if ($regionBId) {
+            $regionB = Region::with(['assessments' => function($q) {
+                $q->latest();
+            }])->find($regionBId);
+        }
+
+        return view('researcher.compare', compact('regions', 'regionA', 'regionB', 'regionAId', 'regionBId'));
+    }
 }

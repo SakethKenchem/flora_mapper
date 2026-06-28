@@ -291,6 +291,9 @@
                 <li class="menu-item">
                     <a href="{{ route('researcher.analysis') }}" class="menu-link">Run Assessment</a>
                 </li>
+                <li class="menu-item">
+                    <a href="{{ route('researcher.compare') }}" class="menu-link">Compare Regions</a>
+                </li>
             </ul>
 
             <div class="menu-label">Flora & Reports</div>
@@ -535,6 +538,8 @@
         function openRegionDetails(regionId) {
             const modal = document.getElementById('region-details-modal');
             if (!modal) return;
+
+            document.getElementById('modal-edit-region-link').href = `/researcher/regions/${regionId}/edit`;
 
             document.getElementById('modal-region-name').innerText = "Loading...";
             document.getElementById('modal-county').innerText = "";
@@ -815,7 +820,8 @@
                 </div>
             </div>
 
-            <div style="margin-top: 20px; text-align: right; border-top: 1px solid #eeeeee; padding-top: 15px;">
+            <div style="margin-top: 20px; text-align: right; border-top: 1px solid #eeeeee; padding-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
+                <a id="modal-edit-region-link" href="#" style="background: #1e5631; color: white; border: 1px solid #1e5631; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; text-decoration: none; display: inline-block; box-sizing: border-box;">Edit Region Details</a>
                 <button onclick="closeRegionModal()"
                     style="background: #e2e8f0; border: 1px solid #cccccc; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: #333333;">Close</button>
             </div>

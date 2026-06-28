@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vulnerability Analysis Console - FloraMapper</title>
+    <title>Edit Region Details - FloraMapper</title>
     <style>
         body {
             margin: 0;
@@ -161,10 +161,35 @@
             cursor: pointer;
             font-size: 13px;
             width: 100%;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-submit:hover {
             background: #153e22;
+        }
+
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #333333;
+            border: 1px solid #cccccc;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-cancel:hover {
+            background: #cbd5e1;
         }
 
         .alert-danger {
@@ -175,17 +200,6 @@
             border-radius: 4px;
             margin-bottom: 15px;
             font-size: 13px;
-        }
-
-        .info-box {
-            background: #f9f9f9;
-            border: 1px solid #e5e5e5;
-            padding: 15px;
-            border-radius: 4px;
-            margin-top: 15px;
-            font-size: 12px;
-            line-height: 1.5;
-            color: #555555;
         }
     </style>
 </head>
@@ -209,29 +223,27 @@
             <div class="menu-label">Datasets</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate
-                        Data</a>
+                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI
-                        Data</a>
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI Data</a>
+                </li>
+                <li class="menu-item">
+                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload Flora Data</a>
                 </li>
             </ul>
 
             <div class="menu-label">Assessments</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.analysis') }}" class="menu-link active">Run Assessment</a>
-                </li>
-                <li class="menu-item">
-                    <a href="{{ route('researcher.compare') }}" class="menu-link">Compare Regions</a>
+                    <a href="{{ route('researcher.analysis') }}" class="menu-link">Run Assessment</a>
                 </li>
             </ul>
 
             <div class="menu-label">Flora & Reports</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.flora.manage') }}" class="menu-link">Flora Registry</a>
+                    <a href="{{ route('researcher.flora.create') }}" class="menu-link">Add Flora Record</a>
                 </li>
                 <li class="menu-item">
                     <a href="#" class="menu-link">Reports Manager</a>
@@ -251,7 +263,7 @@
 
     <div class="main-content">
         <div class="header">
-            <h1>Vulnerability Analysis Console</h1>
+            <h1>Edit Region Details</h1>
         </div>
 
         @if ($errors->any())
@@ -263,62 +275,45 @@
         @endif
 
         <div class="panel">
-            <div class="panel-title">Execute Vulnerability Assessment</div>
+            <div class="panel-title">Update Region Parameters</div>
 
-            <form method="POST" action="{{ route('researcher.analysis.submit') }}">
+            <form method="POST" action="{{ route('researcher.regions.update', $region->region_id) }}">
                 @csrf
 
                 <div class="form-group">
-                    <label for="region_id">Target Region/Ecosystem</label>
-                    <select id="region_id" name="region_id" class="form-control" required>
-                        <option value="">Select Region</option>
-                        @foreach ($regions as $region)
-                            <option value="{{ $region->region_id }}">{{ $region->region_name }}
-                                ({{ $region->county }})</option>
-                        @endforeach
-                    </select>
+                    <label for="region_name">Region Name</label>
+                    <input type="text" id="region_name" name="region_name" class="form-control" value="{{ old('region_name', $region->region_name) }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="climate_dataset_id">Select Climate Reference Dataset</label>
-                    <select id="climate_dataset_id" name="climate_dataset_id" class="form-control" required>
-                        <option value="">Select Climate Dataset</option>
-                        @foreach ($climateDatasets as $dataset)
-                            <option value="{{ $dataset->dataset_id }}">{{ $dataset->dataset_name }}
-                                ({{ $dataset->source_name }})</option>
-                        @endforeach
-                    </select>
+                    <label for="county">County</label>
+                    <input type="text" id="county" name="county" class="form-control" value="{{ old('county', $region->county) }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="vegetation_dataset_id">Select Vegetation (NDVI) Reference Dataset</label>
-                    <select id="vegetation_dataset_id" name="vegetation_dataset_id" class="form-control" required>
-                        <option value="">Select Vegetation Dataset</option>
-                        @foreach ($vegDatasets as $dataset)
-                            <option value="{{ $dataset->dataset_id }}">{{ $dataset->dataset_name }}
-                                ({{ $dataset->source_name }})</option>
-                        @endforeach
-                    </select>
+                    <label for="ecosystem_type">Ecosystem Type</label>
+                    <input type="text" id="ecosystem_type" name="ecosystem_type" class="form-control" value="{{ old('ecosystem_type', $region->ecosystem_type) }}" required>
                 </div>
 
-                <button type="submit" class="btn-submit">Execute Vulnerability Algorithm</button>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label for="latitude">Latitude</label>
+                        <input type="number" step="any" id="latitude" name="latitude" class="form-control" value="{{ old('latitude', $region->latitude) }}" required>
+                    </div>
+                    <div>
+                        <label for="longitude">Longitude</label>
+                        <input type="number" step="any" id="longitude" name="longitude" class="form-control" value="{{ old('longitude', $region->longitude) }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Ecosystem Description</label>
+                    <textarea id="description" name="description" class="form-control" rows="4" style="resize:vertical;">{{ old('description', $region->description) }}</textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">Save Region Details</button>
+                <a href="{{ route('researcher.dashboard') }}" class="btn-cancel">Cancel & Return</a>
             </form>
-
-            <div class="info-box">
-                <strong>Vulnerability Evaluation Logic:</strong>
-                <p>When running this evaluation, the system averages the uploaded temperature, rainfall, and NDVI
-                    parameters for the selected region and compares them using the following indicators:</p>
-                <ul>
-                    <li><strong>Temperature Index</strong>: Measures deviation from the ideal forest temperature
-                        threshold (20°C). Higher deviations indicate high climate sensitivity.</li>
-                    <li><strong>Rainfall Index</strong>: Measures scarcity of rain (inverse scale relative to a 200mm
-                        base target).</li>
-                    <li><strong>NDVI Index</strong>: Measures vegetation thinness (inverse scale relative to a healthy
-                        0.8 NDVI density).</li>
-                </ul>
-                <p>The averaged score is checked against the configured low/moderate/high thresholds to save the
-                    regional rating.</p>
-            </div>
         </div>
     </div>
 

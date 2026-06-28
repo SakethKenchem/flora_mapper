@@ -93,6 +93,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/researcher/datasets/flora/upload', [DatasetController::class, 'uploadFlora'])->name('researcher.datasets.flora.upload.submit');
         Route::post('/researcher/flora/new', [DatasetController::class, 'createFlora'])->name('researcher.flora.store');
 
+        // Region management actions
+        Route::get('/researcher/regions/{region_id}/edit', [DatasetController::class, 'editRegion'])->name('researcher.regions.edit');
+        Route::post('/researcher/regions/{region_id}/edit', [DatasetController::class, 'updateRegion'])->name('researcher.regions.update');
+
+        // Comparison dashboard
+        Route::get('/researcher/compare', [DatasetController::class, 'showCompare'])->name('researcher.compare');
 
         // Analysis console
         Route::get('/researcher/analysis', [DatasetController::class, 'showAnalysis'])->name('researcher.analysis');
