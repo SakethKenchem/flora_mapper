@@ -235,7 +235,7 @@
                     <a href="{{ route('account') }}" class="menu-link">My Account</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" onclick="alert('Search functionality coming soon!')" class="menu-link">Search Region</a>
+                    <a href="{{ route('public.search') }}" class="menu-link">Search Registry</a>
                 </li>
                 <li class="menu-item">
                     <a href="{{ route('public.observations.create') }}" class="menu-link active">Submit Observation</a>

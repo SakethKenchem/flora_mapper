@@ -54,6 +54,9 @@ Route::middleware('auth')->group(function () {
             return view('public.dashboard', compact('myObservations', 'myObservationsCount', 'registeredFlora'));
         })->name('public.dashboard');
 
+        // Search registry
+        Route::get('/public/search', [DatasetController::class, 'publicSearch'])->name('public.search');
+
         // Submit observation report
         Route::get('/public/observations/submit', [DatasetController::class, 'showSubmitObservation'])->name('public.observations.create');
         Route::post('/public/observations/submit', [DatasetController::class, 'submitObservation'])->name('public.observations.submit');

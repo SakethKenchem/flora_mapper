@@ -473,6 +473,33 @@ class DatasetController extends Controller
         ]);
     }
 
+    // Public Search Registry
+    public function publicSearch(Request $request)
+    {
+        $query = $request->input('q');
+        
+        $regions = collect();
+        $flora = collect();
+        
+        if ($query) {
+            $regions = Region::with(['assessments' => function($q) {
+                $q->latest();
+            }])->where('region_name', 'like', "%{$query}%")
+               ->orWhere('county', 'like', "%{$query}%")
+               ->orWhere('ecosystem_type', 'like', "%{$query}%")
+               ->get();
+               
+            $flora = Flora::where('scientific_name', 'like', "%{$query}%")
+               ->orWhere('common_name', 'like', "%{$query}%")
+               ->orWhere('species_type', 'like', "%{$query}%")
+               ->orWhere('conservation_status', 'like', "%{$query}%")
+               ->orWhere('habitat_type', 'like', "%{$query}%")
+               ->get();
+        }
+        
+        return view('public.search', compact('regions', 'flora', 'query'));
+    }
+
     // Show submit observation page
     public function showSubmitObservation()
     {
