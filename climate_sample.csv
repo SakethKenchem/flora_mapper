@@ -1,5 +1,0 @@
-region_name,record_date,temperature_celsius,rainfall_mm,humidity_percent,drought_index,flood_risk_level
-Mau Forest Complex,2026-06-01,24.5,120.0,65.0,0.3,Low
-Tana Delta,2026-06-01,31.2,45.0,75.0,0.7,Moderate
-Mt. Kenya region,2026-06-01,18.4,180.0,60.0,0.1,Low
-Turkana,2026-06-01,29.8,20.0,40.0,0.9,Low

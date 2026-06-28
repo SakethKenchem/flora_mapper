@@ -412,6 +412,7 @@
                                     </span>
                                 </td>
                                 <td>
+                                    <a href="{{ route('admin.users.edit', $user->user_id) }}" class="btn-action" style="text-decoration:none; display:inline-block; line-height:1.4; text-align:center; background:#f9fafb;">Edit</a>
                                     @if ($user->user_id !== Auth::user()->user_id)
                                         @if ($user->account_status === 'Pending')
                                             <form action="{{ route('admin.users.status', $user->user_id) }}" method="POST" style="display:inline;">

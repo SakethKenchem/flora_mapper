@@ -55,6 +55,22 @@ class ObservationReportTest extends TestCase
         ]);
     }
 
+    public function test_guest_cannot_access_observation_submission_page(): void
+    {
+        $response = $this->get(route('public.observations.create'));
+        $response->assertRedirect(route('login'));
+    }
+
+    public function test_authenticated_public_user_can_access_observation_submission_page(): void
+    {
+        $response = $this->actingAs($this->publicUser)
+            ->get(route('public.observations.create'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Submit Observation Report');
+        $response->assertSee('Submit Field Observation Report');
+    }
+
     public function test_unauthenticated_user_cannot_submit_observation(): void
     {
         $response = $this->post(route('public.observations.submit'), []);

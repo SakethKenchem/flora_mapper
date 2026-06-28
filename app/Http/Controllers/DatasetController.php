@@ -473,6 +473,13 @@ class DatasetController extends Controller
         ]);
     }
 
+    // Show submit observation page
+    public function showSubmitObservation()
+    {
+        $registeredFlora = Flora::select('flora_id', 'scientific_name', 'common_name')->get();
+        return view('public.submit_observation', compact('registeredFlora'));
+    }
+
     // Submit a public observation report with CSV and image
     public function submitObservation(Request $request)
     {

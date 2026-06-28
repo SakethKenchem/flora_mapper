@@ -191,4 +191,53 @@ class AuthController extends Controller
 
         return back()->with('success', "User account for '{$user->full_name}' updated to status: {$request->status}.");
     }
+
+    // Admin user editing
+    public function editUser($userId)
+    {
+        $user = User::findOrFail($userId);
+        $roles = Role::all();
+        return view('admin.edit_user', compact('user', 'roles'));
+    }
+
+    public function updateUser(Request $request, $userId)
+    {
+        $user = User::findOrFail($userId);
+        $isSelf = ($user->user_id === Auth::user()->user_id);
+
+        $rules = [
+            'full_name' => 'required|string|max:120',
+            'email' => 'required|email|unique:users,email,' . $user->user_id . ',user_id',
+            'phone_number' => 'nullable|string|max:30',
+            'role_id' => 'required|exists:roles,role_id',
+            'account_status' => 'required|in:Active,Suspended,Disabled,Pending',
+            'institution' => 'nullable|string|max:150',
+            'specialisation' => 'nullable|string|max:100',
+            'preferred_region' => 'nullable|string|max:100',
+        ];
+
+        // Conditional validations based on selected role
+        if ($request->role_id == 2) { // Researcher
+            $rules['institution'] = 'required|string|max:150';
+        }
+
+        $request->validate($rules);
+
+        $user->full_name = $request->full_name;
+        $user->email = $request->email;
+        $user->phone_number = $request->phone_number;
+
+        if (!$isSelf) {
+            $user->role_id = $request->role_id;
+            $user->account_status = $request->account_status;
+        }
+
+        $user->institution = $request->institution;
+        $user->specialisation = $request->specialisation;
+        $user->preferred_region = $request->preferred_region;
+
+        $user->save();
+
+        return redirect()->route('admin.dashboard')->with('success', "User account details for '{$user->full_name}' have been successfully updated.");
+    }
 }

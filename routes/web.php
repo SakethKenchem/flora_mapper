@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
         })->name('public.dashboard');
 
         // Submit observation report
+        Route::get('/public/observations/submit', [DatasetController::class, 'showSubmitObservation'])->name('public.observations.create');
         Route::post('/public/observations/submit', [DatasetController::class, 'submitObservation'])->name('public.observations.submit');
     });
 
@@ -111,5 +112,9 @@ Route::middleware('auth')->group(function () {
 
         // User status manager (approve, reject, suspend, activate)
         Route::post('/admin/users/{user_id}/status', [AuthController::class, 'updateUserStatus'])->name('admin.users.status');
+
+        // User details editor
+        Route::get('/admin/users/{user_id}/edit', [AuthController::class, 'editUser'])->name('admin.users.edit');
+        Route::post('/admin/users/{user_id}/update', [AuthController::class, 'updateUser'])->name('admin.users.update');
     });
 });
