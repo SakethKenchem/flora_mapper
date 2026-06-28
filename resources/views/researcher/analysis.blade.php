@@ -250,8 +250,9 @@
     </div>
 
     <div class="main-content">
-        <div class="header">
+        <div class="header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dcdcdc; padding-bottom: 15px; margin-bottom: 20px;">
             <h1>Vulnerability Analysis Console</h1>
+            <a href="{{ route('researcher.export.assessments') }}" style="background: #1e5631; color: white; border: 1px solid #1e5631; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-weight: bold; font-size: 13px; display: inline-flex; align-items: center;">Export Assessments History (CSV)</a>
         </div>
 
         @if ($errors->any())

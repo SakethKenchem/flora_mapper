@@ -100,6 +100,10 @@ Route::middleware('auth')->group(function () {
         // Comparison dashboard
         Route::get('/researcher/compare', [DatasetController::class, 'showCompare'])->name('researcher.compare');
 
+        // Export Actions
+        Route::get('/researcher/export/assessments', [DatasetController::class, 'exportAssessments'])->name('researcher.export.assessments');
+        Route::get('/researcher/export/observations', [DatasetController::class, 'exportObservations'])->name('researcher.export.observations');
+
         // Analysis console
         Route::get('/researcher/analysis', [DatasetController::class, 'showAnalysis'])->name('researcher.analysis');
         Route::post('/researcher/analysis', [DatasetController::class, 'runAnalysis'])->name('researcher.analysis.submit');

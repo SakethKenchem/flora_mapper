@@ -360,8 +360,31 @@
 
         <div class="workspace-row">
             <div class="panel">
-                <div class="panel-title">Public Observations Queue</div>
-                <div style="overflow-x: auto;">
+                 <div class="panel-title">Public Observations Queue</div>
+                 
+                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; flex-wrap: wrap;">
+                     <div style="display: flex; gap: 10px; flex-grow: 1; max-width: 70%;">
+                         <input type="text" id="obs-search" placeholder="Search observer, flora, region..." onkeyup="filterObservationsTable()" style="padding: 8px; border-radius: 4px; border: 1px solid #cccccc; font-size: 13px; flex-grow: 1; max-width: 250px;">
+                         
+                         <select id="obs-status-filter" onchange="filterObservationsTable()" style="padding: 8px; border-radius: 4px; border: 1px solid #cccccc; font-size: 13px; background: white;">
+                             <option value="all">All Statuses</option>
+                             <option value="Pending">Pending</option>
+                             <option value="Approved">Approved</option>
+                             <option value="Rejected">Rejected</option>
+                         </select>
+
+                         <select id="obs-level-filter" onchange="filterObservationsTable()" style="padding: 8px; border-radius: 4px; border: 1px solid #cccccc; font-size: 13px; background: white;">
+                             <option value="all">All Vulnerabilities</option>
+                             <option value="High">High</option>
+                             <option value="Moderate">Moderate</option>
+                             <option value="Low">Low</option>
+                             <option value="Not Assessed">Not Assessed</option>
+                         </select>
+                     </div>
+                     <a href="{{ route('researcher.export.observations') }}" class="btn-action" style="background: #1e5631; color: white; border: 1px solid #1e5631; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; font-size: 11px; display: inline-flex; align-items: center; height: 32px; box-sizing: border-box; margin-right: 0;">Export Queue (CSV)</a>
+                 </div>
+
+                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
                             <tr>
@@ -375,16 +398,16 @@
                         </thead>
                         <tbody>
                             @forelse($observations as $obs)
-                                <tr>
+                                <tr class="obs-row" data-status="{{ $obs->status }}" data-level="{{ $obs->flora ? $obs->flora->vulnerability_level : 'Not Assessed' }}">
                                     <td>
-                                        <strong>{{ $obs->flora_name }}</strong>
+                                        <strong class="obs-flora-name">{{ $obs->flora_name }}</strong>
                                         @if ($obs->description)
                                             <div style="font-size: 11px; color: #666666; margin-top: 2px;">
                                                 {{ $obs->description }}</div>
                                         @endif
                                     </td>
-                                    <td>{{ $obs->location }}</td>
-                                    <td>{{ $obs->observer ? $obs->observer->full_name : 'Public Observer' }}</td>
+                                    <td class="obs-location">{{ $obs->location }}</td>
+                                    <td class="obs-observer">{{ $obs->observer ? $obs->observer->full_name : 'Public Observer' }}</td>
                                     <td>{{ $obs->date_observed ? $obs->date_observed->format('Y-m-d') : 'N/A' }}</td>
                                     <td>
                                         @if ($obs->status === 'Pending')
@@ -769,6 +792,32 @@
 
         function closeObservationModal() {
             document.getElementById('observation-details-modal').style.display = 'none';
+        }
+
+        function filterObservationsTable() {
+            const query = document.getElementById('obs-search').value.trim().toLowerCase();
+            const status = document.getElementById('obs-status-filter').value;
+            const level = document.getElementById('obs-level-filter').value;
+
+            const rows = document.querySelectorAll('.obs-row');
+            rows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                const rowLevel = row.getAttribute('data-level');
+                
+                const floraName = row.querySelector('.obs-flora-name').innerText.toLowerCase();
+                const location = row.querySelector('.obs-location').innerText.toLowerCase();
+                const observer = row.querySelector('.obs-observer').innerText.toLowerCase();
+
+                const matchesQuery = floraName.includes(query) || location.includes(query) || observer.includes(query);
+                const matchesStatus = status === 'all' || rowStatus === status;
+                const matchesLevel = level === 'all' || rowLevel === level;
+
+                if (matchesQuery && matchesStatus && matchesLevel) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
     </script>
 
