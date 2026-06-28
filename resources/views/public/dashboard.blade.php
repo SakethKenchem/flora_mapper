@@ -211,8 +211,7 @@
                     <a href="{{ route('account') }}" class="menu-link">My Account</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" onclick="alert('Search functionality coming soon!')" class="menu-link">Search
-                        Region</a>
+                    <a href="{{ route('map') }}" class="menu-link">Map</a>
                 </li>
                 <li class="menu-item">
                     <a href="{{ route('public.observations.create') }}" class="menu-link">Submit Observation</a>
@@ -244,7 +243,8 @@
         @endif
 
         @if ($errors->any())
-            <div class="alert" style="background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 20px;">
+            <div class="alert"
+                style="background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; margin-bottom: 20px;">
                 <ul style="margin: 0; padding-left: 20px; font-size: 13px;">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -268,7 +268,8 @@
                     </div>
 
                     <a href="{{ route('map') }}" class="btn-action">Explore Interactive Map</a>
-                    <a href="{{ route('public.observations.create') }}" class="btn-action" style="background: white; color: #1e5631; text-decoration: none;">Submit Observation</a>
+                    <a href="{{ route('public.observations.create') }}" class="btn-action"
+                        style="background: white; color: #1e5631; text-decoration: none;">Submit Observation</a>
                 </div>
 
                 <div class="panel">
@@ -306,26 +307,28 @@
                     <tbody>
                         @forelse($myObservations as $obs)
                             <tr style="border-bottom: 1px solid #eeeeee;">
-                                <td style="padding: 10px; font-weight: bold; color: #1e5631;">{{ $obs->flora_name }}</td>
+                                <td style="padding: 10px; font-weight: bold; color: #1e5631;">{{ $obs->flora_name }}
+                                </td>
                                 <td style="padding: 10px;">{{ $obs->location }}</td>
-                                <td style="padding: 10px;">{{ $obs->date_observed ? $obs->date_observed->format('Y-m-d') : 'N/A' }}</td>
                                 <td style="padding: 10px;">
-                                    <span style="font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 11px; display: inline-block; text-align: center;
-                                        @if ($obs->status === 'Approved')
-                                            color: #155724; background: #d4edda; border: 1px solid #c3e6cb;
+                                    {{ $obs->date_observed ? $obs->date_observed->format('Y-m-d') : 'N/A' }}</td>
+                                <td style="padding: 10px;">
+                                    <span
+                                        style="font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 11px; display: inline-block; text-align: center;
+                                        @if ($obs->status === 'Approved') color: #155724; background: #d4edda; border: 1px solid #c3e6cb;
                                         @elseif ($obs->status === 'Rejected')
                                             color: #721c24; background: #f8d7da; border: 1px solid #f5c6cb;
                                         @else
-                                            color: #8a6d3b; background: #fcf8e3; border: 1px solid #faf2cc;
-                                        @endif
+                                            color: #8a6d3b; background: #fcf8e3; border: 1px solid #faf2cc; @endif
                                     ">
                                         {{ $obs->status }}
                                     </span>
                                 </td>
                                 <td style="padding: 10px; color: #555;">
-                                    @if($obs->status !== 'Pending')
+                                    @if ($obs->status !== 'Pending')
                                         <strong>{{ $obs->reviewer ? $obs->reviewer->full_name : 'Researcher' }}:</strong>
-                                        <span style="font-style: italic;">"{{ $obs->review_comment ?? 'No comment provided' }}"</span>
+                                        <span
+                                            style="font-style: italic;">"{{ $obs->review_comment ?? 'No comment provided' }}"</span>
                                     @else
                                         <span style="color: #999;">Awaiting review</span>
                                     @endif
@@ -333,7 +336,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" style="padding: 20px; text-align: center; color: #666;">You haven't submitted any observation reports yet.</td>
+                                <td colspan="5" style="padding: 20px; text-align: center; color: #666;">You haven't
+                                    submitted any observation reports yet.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -383,7 +387,7 @@
 
                         marker.bindPopup(
                             `<strong>${r.region_name}</strong><br>Vulnerability: ${r.vulnerability_level} ${r.overall_score ? `(${r.overall_score}%)` : ''}`
-                            );
+                        );
                     });
                 })
                 .catch(err => console.error("Error loading vulnerability data:", err));

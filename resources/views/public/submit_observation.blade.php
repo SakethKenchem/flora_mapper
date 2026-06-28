@@ -213,7 +213,7 @@
                     <a href="{{ route('account') }}" class="menu-link">My Account</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" onclick="alert('Search functionality coming soon!')" class="menu-link">Search Region</a>
+                    <a href="{{ route('map') }}" class="menu-link">Map</a>
                 </li>
                 <li class="menu-item">
                     <a href="{{ route('public.observations.create') }}" class="menu-link active">Submit Observation</a>
@@ -247,101 +247,139 @@
         <div class="panel">
             <div class="panel-title">Submit Field Observation Report</div>
 
-            <form action="{{ route('public.observations.submit') }}" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
+            <form action="{{ route('public.observations.submit') }}" method="POST" enctype="multipart/form-data"
+                style="display: flex; flex-direction: column; gap: 15px;">
                 @csrf
 
                 <div class="form-group">
                     <label for="flora_id">Registered Species (Optional)</label>
-                    <select id="flora_id" name="flora_id" onchange="toggleCustomFlora(this)" class="form-control" style="height: 35px;">
+                    <select id="flora_id" name="flora_id" onchange="toggleCustomFlora(this)" class="form-control"
+                        style="height: 35px;">
                         <option value="">-- Select Registered Species (or enter custom below) --</option>
                         @foreach ($registeredFlora as $flora)
-                            <option value="{{ $flora->flora_id }}" {{ old('flora_id') == $flora->flora_id ? 'selected' : '' }}>
+                            <option value="{{ $flora->flora_id }}"
+                                {{ old('flora_id') == $flora->flora_id ? 'selected' : '' }}>
                                 {{ $flora->scientific_name }} ({{ $flora->common_name ?? 'No common name' }})
                             </option>
                         @endforeach
-                        <option value="custom" {{ old('flora_id') === 'custom' ? 'selected' : '' }}>Other / Custom Species (Type manually)</option>
+                        <option value="custom" {{ old('flora_id') === 'custom' ? 'selected' : '' }}>Other / Custom
+                            Species (Type manually)</option>
                     </select>
                 </div>
 
                 <div id="custom-flora-group" class="form-group">
                     <label for="flora_name_custom">Flora Species Name <span style="color: red;">*</span></label>
-                    <input type="text" id="flora_name_custom" name="flora_name_custom" placeholder="e.g. Ficus sycomorus" class="form-control" style="height: 35px;" value="{{ old('flora_name_custom') }}" required>
+                    <input type="text" id="flora_name_custom" name="flora_name_custom"
+                        placeholder="e.g. Ficus sycomorus" class="form-control" style="height: 35px;"
+                        value="{{ old('flora_name_custom') }}" required>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group">
                         <label for="location">Location / Region <span style="color: red;">*</span></label>
-                        <input type="text" id="location" name="location" placeholder="e.g. Mau Forest Complex Block B" class="form-control" style="height: 35px;" value="{{ old('location') }}" required>
+                        <input type="text" id="location" name="location"
+                            placeholder="e.g. Mau Forest Complex Block B" class="form-control" style="height: 35px;"
+                            value="{{ old('location') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="date_observed">Date Observed <span style="color: red;">*</span></label>
-                        <input type="date" id="date_observed" name="date_observed" max="{{ date('Y-m-d') }}" class="form-control" style="height: 35px;" value="{{ old('date_observed') }}" required>
+                        <input type="date" id="date_observed" name="date_observed" max="{{ date('Y-m-d') }}"
+                            class="form-control" style="height: 35px;" value="{{ old('date_observed') }}" required>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="description">Text Observations & Details <span style="color: red;">*</span></label>
-                    <textarea id="description" name="description" placeholder="Describe the health status, canopy density, soil conditions, tree damage, or other text observations..." rows="4" class="form-control" style="resize: vertical;" required>{{ old('description') }}</textarea>
+                    <textarea id="description" name="description"
+                        placeholder="Describe the health status, canopy density, soil conditions, tree damage, or other text observations..."
+                        rows="4" class="form-control" style="resize: vertical;" required>{{ old('description') }}</textarea>
                 </div>
 
                 <!-- Quantitative Metrics (Climate & Vegetation) -->
                 <div style="border-top: 1px solid #eee; padding-top: 15px; margin-top: 5px;">
-                    <h4 style="margin: 0 0 10px 0; color: #1e5631; font-size: 14px; font-weight: bold;">Quantitative Field Metrics (Optional)</h4>
+                    <h4 style="margin: 0 0 10px 0; color: #1e5631; font-size: 14px; font-weight: bold;">Quantitative
+                        Field Metrics (Optional)</h4>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                         <div class="form-group">
                             <label for="temperature_celsius">Temperature (°C)</label>
-                            <input type="number" step="0.1" min="-10" max="60" id="temperature_celsius" name="temperature_celsius" placeholder="e.g. 24.5" class="form-control" style="height: 35px;" value="{{ old('temperature_celsius') }}">
+                            <input type="number" step="0.1" min="-10" max="60" id="temperature_celsius"
+                                name="temperature_celsius" placeholder="e.g. 24.5" class="form-control"
+                                style="height: 35px;" value="{{ old('temperature_celsius') }}">
                         </div>
                         <div class="form-group">
                             <label for="rainfall_mm">Rainfall (mm)</label>
-                            <input type="number" step="0.1" min="0" max="5000" id="rainfall_mm" name="rainfall_mm" placeholder="e.g. 150.2" class="form-control" style="height: 35px;" value="{{ old('rainfall_mm') }}">
+                            <input type="number" step="0.1" min="0" max="5000" id="rainfall_mm"
+                                name="rainfall_mm" placeholder="e.g. 150.2" class="form-control"
+                                style="height: 35px;" value="{{ old('rainfall_mm') }}">
                         </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
                         <div class="form-group">
                             <label for="humidity_percent">Humidity (%)</label>
-                            <input type="number" step="0.1" min="0" max="100" id="humidity_percent" name="humidity_percent" placeholder="e.g. 65.0" class="form-control" style="height: 35px;" value="{{ old('humidity_percent') }}">
+                            <input type="number" step="0.1" min="0" max="100"
+                                id="humidity_percent" name="humidity_percent" placeholder="e.g. 65.0"
+                                class="form-control" style="height: 35px;" value="{{ old('humidity_percent') }}">
                         </div>
                         <div class="form-group">
                             <label for="drought_index">Drought Index</label>
-                            <input type="number" step="0.1" min="0" max="10" id="drought_index" name="drought_index" placeholder="e.g. 2.5 (0-10 scale)" class="form-control" style="height: 35px;" value="{{ old('drought_index') }}">
+                            <input type="number" step="0.1" min="0" max="10" id="drought_index"
+                                name="drought_index" placeholder="e.g. 2.5 (0-10 scale)" class="form-control"
+                                style="height: 35px;" value="{{ old('drought_index') }}">
                         </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
                         <div class="form-group">
                             <label for="ndvi_value">NDVI (-1.0 to 1.0)</label>
-                            <input type="number" step="0.001" min="-1" max="1" id="ndvi_value" name="ndvi_value" placeholder="e.g. 0.452" class="form-control" style="height: 35px;" value="{{ old('ndvi_value') }}">
+                            <input type="number" step="0.001" min="-1" max="1" id="ndvi_value"
+                                name="ndvi_value" placeholder="e.g. 0.452" class="form-control"
+                                style="height: 35px;" value="{{ old('ndvi_value') }}">
                         </div>
                         <div class="form-group">
                             <label for="vegetation_cover_percent">Veg Cover (%)</label>
-                            <input type="number" step="0.1" min="0" max="100" id="vegetation_cover_percent" name="vegetation_cover_percent" placeholder="e.g. 75.5" class="form-control" style="height: 35px;" value="{{ old('vegetation_cover_percent') }}">
+                            <input type="number" step="0.1" min="0" max="100"
+                                id="vegetation_cover_percent" name="vegetation_cover_percent" placeholder="e.g. 75.5"
+                                class="form-control" style="height: 35px;"
+                                value="{{ old('vegetation_cover_percent') }}">
                         </div>
                         <div class="form-group">
                             <label for="vegetation_condition">Veg Condition</label>
-                            <select id="vegetation_condition" name="vegetation_condition" class="form-control" style="background: #fff; height: 35px;">
+                            <select id="vegetation_condition" name="vegetation_condition" class="form-control"
+                                style="background: #fff; height: 35px;">
                                 <option value="">-- Select --</option>
-                                <option value="Healthy" {{ old('vegetation_condition') === 'Healthy' ? 'selected' : '' }}>Healthy</option>
-                                <option value="Moderate" {{ old('vegetation_condition') === 'Moderate' ? 'selected' : '' }}>Moderate</option>
-                                <option value="Stressed" {{ old('vegetation_condition') === 'Stressed' ? 'selected' : '' }}>Stressed</option>
-                                <option value="Degraded" {{ old('vegetation_condition') === 'Degraded' ? 'selected' : '' }}>Degraded</option>
+                                <option value="Healthy"
+                                    {{ old('vegetation_condition') === 'Healthy' ? 'selected' : '' }}>Healthy</option>
+                                <option value="Moderate"
+                                    {{ old('vegetation_condition') === 'Moderate' ? 'selected' : '' }}>Moderate
+                                </option>
+                                <option value="Stressed"
+                                    {{ old('vegetation_condition') === 'Stressed' ? 'selected' : '' }}>Stressed
+                                </option>
+                                <option value="Degraded"
+                                    {{ old('vegetation_condition') === 'Degraded' ? 'selected' : '' }}>Degraded
+                                </option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                <div
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid #eee; padding-top: 15px;">
                     <div class="form-group">
                         <label for="image_file">Supporting Image <span style="color: red;">*</span></label>
-                        <input type="file" id="image_file" name="image_file" accept="image/*" style="width: 100%; font-size: 12px;" required>
-                        <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">PNG, JPG, JPEG up to 4MB</small>
+                        <input type="file" id="image_file" name="image_file" accept="image/*"
+                            style="width: 100%; font-size: 12px;" required>
+                        <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">PNG, JPG, JPEG up
+                            to 4MB</small>
                     </div>
                     <div class="form-group">
                         <label for="csv_file">Supporting CSV Data <span style="color: red;">*</span></label>
-                        <input type="file" id="csv_file" name="csv_file" accept=".csv,.txt" style="width: 100%; font-size: 12px;" required>
-                        <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">CSV file with scientific details</small>
+                        <input type="file" id="csv_file" name="csv_file" accept=".csv,.txt"
+                            style="width: 100%; font-size: 12px;" required>
+                        <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">CSV file with
+                            scientific details</small>
                     </div>
                 </div>
 
