@@ -123,10 +123,11 @@ Route::middleware('auth')->group(function () {
             $users = \App\Models\User::with('role')->get();
             $totalUsers = $users->count();
             $activeObservers = \App\Models\User::where('role_id', 1)->where('account_status', 'Active')->count();
+            $threshold = \App\Models\VulnerabilityThreshold::first();
             $thresholdCount = \App\Models\VulnerabilityThreshold::count();
             $backupsCount = 12;
 
-            return view('admin.dashboard', compact('users', 'totalUsers', 'activeObservers', 'thresholdCount', 'backupsCount'));
+            return view('admin.dashboard', compact('users', 'totalUsers', 'activeObservers', 'threshold', 'thresholdCount', 'backupsCount'));
         })->name('admin.dashboard');
 
         // User status manager (approve, reject, suspend, activate)
@@ -135,5 +136,11 @@ Route::middleware('auth')->group(function () {
         // User details editor
         Route::get('/admin/users/{user_id}/edit', [AuthController::class, 'editUser'])->name('admin.users.edit');
         Route::post('/admin/users/{user_id}/update', [AuthController::class, 'updateUser'])->name('admin.users.update');
+
+        // Delete user
+        Route::delete('/admin/users/{user_id}', [AuthController::class, 'deleteUser'])->name('admin.users.delete');
+
+        // Update system configuration thresholds
+        Route::post('/admin/thresholds', [AuthController::class, 'updateThresholds'])->name('admin.thresholds.update');
     });
 });

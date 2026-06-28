@@ -240,4 +240,50 @@ class AuthController extends Controller
 
         return redirect()->route('admin.dashboard')->with('success', "User account details for '{$user->full_name}' have been successfully updated.");
     }
+
+    // Admin user deletion
+    public function deleteUser($userId)
+    {
+        $user = User::findOrFail($userId);
+
+        // Prevent admin self-deletion
+        if ($user->user_id === Auth::user()->user_id) {
+            return back()->withErrors(['error' => 'You cannot delete your own admin account.']);
+        }
+
+        $user->delete();
+
+        return back()->with('success', "User '{$user->full_name}' has been permanently deleted.");
+    }
+
+    // Admin threshold updates
+    public function updateThresholds(Request $request)
+    {
+        $request->validate([
+            'low_min' => 'required|numeric|min:0|max:100',
+            'low_max' => 'required|numeric|min:0|max:100|gte:low_min',
+            'moderate_min' => 'required|numeric|min:0|max:100|gt:low_max',
+            'moderate_max' => 'required|numeric|min:0|max:100|gte:moderate_min',
+            'high_min' => 'required|numeric|min:0|max:100|gt:moderate_max',
+            'high_max' => 'required|numeric|min:0|max:100|gte:high_min',
+        ]);
+
+        $threshold = \App\Models\VulnerabilityThreshold::first();
+
+        if (!$threshold) {
+            $threshold = new \App\Models\VulnerabilityThreshold();
+            $threshold->threshold_name = 'Default Policy Set';
+        }
+
+        $threshold->low_min = $request->low_min;
+        $threshold->low_max = $request->low_max;
+        $threshold->moderate_min = $request->moderate_min;
+        $threshold->moderate_max = $request->moderate_max;
+        $threshold->high_min = $request->high_min;
+        $threshold->high_max = $request->high_max;
+        $threshold->created_by = Auth::user()->user_id;
+        $threshold->save();
+
+        return back()->with('success', 'Vulnerability evaluation threshold mappings updated successfully.');
+    }
 }

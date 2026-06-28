@@ -438,6 +438,11 @@
                                                 <button type="submit" class="btn-action" style="background:#d4edda; color:#155724; border-color:#c3e6cb;">Activate</button>
                                             </form>
                                         @endif
+                                        <form action="{{ route('admin.users.delete', $user->user_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to permanently delete user \'{{ $user->full_name }}\'? This action is irreversible.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn-action" style="background:#f8d7da; color:#721c24; border-color:#f5c6cb; margin-left: 2px;">Delete</button>
+                                        </form>
                                     @else
                                         <span style="font-size:11px; color:#666666;">Current Admin</span>
                                     @endif
@@ -450,28 +455,30 @@
 
             <div class="panel">
                 <div class="panel-title">Vulnerability Threshold Parameters</div>
-                <form onsubmit="event.preventDefault(); saveThresholds();">
+                <form method="POST" action="{{ route('admin.thresholds.update') }}">
+                    @csrf
+                    
                     <div class="form-group">
                         <label>Low Vulnerability Range</label>
                         <div class="form-row">
-                            <input type="number" class="form-input" value="0" required>
-                            <input type="number" class="form-input" value="30" required>
+                            <input type="number" name="low_min" class="form-input" value="{{ old('low_min', $threshold ? intval($threshold->low_min) : 0) }}" min="0" max="100" required>
+                            <input type="number" name="low_max" class="form-input" value="{{ old('low_max', $threshold ? intval($threshold->low_max) : 30) }}" min="0" max="100" required>
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label>Moderate Vulnerability Range</label>
                         <div class="form-row">
-                            <input type="number" class="form-input" value="31" required>
-                            <input type="number" class="form-input" value="60" required>
+                            <input type="number" name="moderate_min" class="form-input" value="{{ old('moderate_min', $threshold ? intval($threshold->moderate_min) : 31) }}" min="0" max="100" required>
+                            <input type="number" name="moderate_max" class="form-input" value="{{ old('moderate_max', $threshold ? intval($threshold->moderate_max) : 60) }}" min="0" max="100" required>
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label>High Vulnerability Range</label>
                         <div class="form-row">
-                            <input type="number" class="form-input" value="61" required>
-                            <input type="number" class="form-input" value="100" required>
+                            <input type="number" name="high_min" class="form-input" value="{{ old('high_min', $threshold ? intval($threshold->high_min) : 61) }}" min="0" max="100" required>
+                            <input type="number" name="high_max" class="form-input" value="{{ old('high_max', $threshold ? intval($threshold->high_max) : 100) }}" min="0" max="100" required>
                         </div>
                     </div>
 
