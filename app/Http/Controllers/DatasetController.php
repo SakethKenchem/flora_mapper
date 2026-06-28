@@ -431,6 +431,9 @@ class DatasetController extends Controller
                 'ecosystem_type' => $region->ecosystem_type,
                 'vulnerability_level' => $latestAssessment ? $latestAssessment->vulnerability_level : 'Not Assessed',
                 'overall_score' => $latestAssessment ? floatval($latestAssessment->overall_score) : null,
+                'temperature_score' => $latestAssessment ? floatval($latestAssessment->temperature_score) : null,
+                'rainfall_score' => $latestAssessment ? floatval($latestAssessment->rainfall_score) : null,
+                'ndvi_score' => $latestAssessment ? floatval($latestAssessment->ndvi_score) : null,
                 'interpretation' => $latestAssessment ? $latestAssessment->interpretation : 'This region has not been assessed yet. Datasets must be uploaded and calculated by researchers.',
             ];
         }

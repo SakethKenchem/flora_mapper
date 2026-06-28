@@ -150,7 +150,39 @@
             
             <div class="form-group">
                 <label for="search-input">Search Region</label>
-                <input type="text" id="search-input" class="form-control" placeholder="Type region, county..." onkeyup="filterRegions(this.value)">
+                <input type="text" id="search-input" class="form-control" placeholder="Type region, county..." onkeyup="filterRegionsList()">
+            </div>
+
+            <div class="form-group">
+                <label for="indicator-select">Climate Indicator</label>
+                <select id="indicator-select" class="form-control" onchange="changeIndicator(this.value)">
+                    <option value="overall">Overall Vulnerability Index</option>
+                    <option value="temperature">Average Temperature Score</option>
+                    <option value="rainfall">Average Monthly Rainfall Score</option>
+                    <option value="ndvi">Average NDVI Vegetation Score</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ecosystem-select">Ecosystem Type</label>
+                <select id="ecosystem-select" class="form-control" onchange="filterRegionsList()">
+                    <option value="">All Ecosystems</option>
+                    <option value="Montane Forest">Montane Forest</option>
+                    <option value="Wetland/Mangrove">Wetland/Mangrove</option>
+                    <option value="Alpine/Montane Forest">Alpine/Montane Forest</option>
+                    <option value="Savannah">Savannah</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="vulnerability-select">Vulnerability Level</label>
+                <select id="vulnerability-select" class="form-control" onchange="filterRegionsList()">
+                    <option value="">All Levels</option>
+                    <option value="High">High</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Low">Low</option>
+                    <option value="Not Assessed">Not Assessed</option>
+                </select>
             </div>
 
             <div class="legend">
@@ -208,19 +240,49 @@
                 });
         });
 
-        function renderMarkers(data) {
+        let currentIndicator = 'overall';
+
+        function renderMarkers(data, indicator = 'overall') {
             // Clear existing markers
             markers.forEach(m => map.removeLayer(m));
             markers = [];
 
             data.forEach(r => {
+                let score = null;
+                let activeLevel = 'Not Assessed';
+                let scoreText = '';
+
+                if (indicator === 'overall') {
+                    score = r.overall_score;
+                    activeLevel = r.vulnerability_level;
+                    scoreText = score ? `${score}%` : 'Not Assessed';
+                } else if (indicator === 'temperature') {
+                    score = r.temperature_score;
+                    activeLevel = score >= 61 ? 'High' : (score >= 31 ? 'Moderate' : 'Low');
+                    scoreText = score ? `${score}%` : 'Not Assessed';
+                } else if (indicator === 'rainfall') {
+                    score = r.rainfall_score;
+                    activeLevel = score >= 61 ? 'High' : (score >= 31 ? 'Moderate' : 'Low');
+                    scoreText = score ? `${score}%` : 'Not Assessed';
+                } else if (indicator === 'ndvi') {
+                    score = r.ndvi_score;
+                    activeLevel = score >= 61 ? 'High' : (score >= 31 ? 'Moderate' : 'Low');
+                    scoreText = score ? `${score}%` : 'Not Assessed';
+                }
+
+                if (score === null) {
+                    activeLevel = 'Not Assessed';
+                }
+
                 let color = '#9ca3af'; // Not Assessed (Gray)
-                if (r.vulnerability_level === 'High') {
-                    color = '#ef4444'; // Red
-                } else if (r.vulnerability_level === 'Moderate') {
-                    color = '#f59e0b'; // Yellow/Orange
-                } else if (r.vulnerability_level === 'Low') {
-                    color = '#10b981'; // Green
+                if (score !== null) {
+                    if (score >= 61) {
+                        color = '#ef4444'; // Red
+                    } else if (score >= 31) {
+                        color = '#f59e0b'; // Yellow/Orange
+                    } else {
+                        color = '#10b981'; // Green
+                    }
                 }
 
                 const marker = L.circleMarker([r.latitude, r.longitude], {
@@ -238,8 +300,8 @@
                         <strong>County:</strong> ${r.county || 'N/A'}<br>
                         <strong>Ecosystem:</strong> ${r.ecosystem_type || 'N/A'}<br>
                         <strong>Vulnerability Level:</strong> 
-                        <span style="font-weight: bold; color: ${color};">${r.vulnerability_level}</span> 
-                        ${r.overall_score ? `(${r.overall_score}%)` : ''}<br><br>
+                        <span style="font-weight: bold; color: ${color};">${activeLevel}</span> 
+                        ${score !== null ? `(${scoreText})` : ''}<br><br>
                         <p style="margin: 0 0 8px 0; color: #555555; line-height: 1.4;">${r.interpretation}</p>
                         <button onclick="openRegionDetails(${r.region_id})" style="background: #1e5631; color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 11px; width: 100%;">View Regional Datasets</button>
                     </div>
@@ -247,19 +309,34 @@
                 marker.bindPopup(popupContent);
                 marker.region_name = r.region_name.toLowerCase();
                 marker.county = (r.county || '').toLowerCase();
+                marker.ecosystem_type = r.ecosystem_type;
+                marker.vulnerability_level = activeLevel;
                 markers.push(marker);
             });
         }
 
-        function filterRegions(query) {
-            const cleanQuery = query.trim().toLowerCase();
+        function filterRegionsList() {
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            const ecosystem = document.getElementById('ecosystem-select').value;
+            const vulnerability = document.getElementById('vulnerability-select').value;
+
             markers.forEach(marker => {
-                if (marker.region_name.includes(cleanQuery) || marker.county.includes(cleanQuery)) {
+                const matchesQuery = marker.region_name.includes(query) || marker.county.includes(query);
+                const matchesEcosystem = !ecosystem || marker.ecosystem_type === ecosystem;
+                const matchesVulnerability = !vulnerability || marker.vulnerability_level === vulnerability;
+
+                if (matchesQuery && matchesEcosystem && matchesVulnerability) {
                     marker.setStyle({ opacity: 1, fillOpacity: 0.8 });
                 } else {
                     marker.setStyle({ opacity: 0.1, fillOpacity: 0.1 });
                 }
             });
+        }
+
+        function changeIndicator(indicator) {
+            currentIndicator = indicator;
+            renderMarkers(regionsData, indicator);
+            filterRegionsList(); // Re-apply current searches/filters
         }
 
         function openRegionDetails(regionId) {
