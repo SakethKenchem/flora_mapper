@@ -477,7 +477,32 @@ class DatasetController extends Controller
     public function showSubmitObservation()
     {
         $registeredFlora = Flora::select('flora_id', 'scientific_name', 'common_name')->get();
-        return view('public.submit_observation', compact('registeredFlora'));
+        $user = auth()->user();
+        $myObservations = ObservationReport::where('public_id', $user->user_id)->latest()->get();
+        return view('public.submit_observation', compact('registeredFlora', 'myObservations'));
+    }
+
+    // Delete observation report
+    public function deleteObservation($observationId)
+    {
+        $observation = ObservationReport::findOrFail($observationId);
+        
+        // Ensure the logged-in user owns the report
+        if ($observation->public_id !== auth()->user()->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Delete physical files if they exist
+        if ($observation->image_path) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($observation->image_path);
+        }
+        if ($observation->csv_path) {
+            \Illuminate\Support\Facades\Storage::delete($observation->csv_path);
+        }
+
+        $observation->delete();
+
+        return redirect()->back()->with('success', 'Observation report has been successfully deleted.');
     }
 
     // Submit a public observation report with CSV and image

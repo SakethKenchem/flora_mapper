@@ -105,12 +105,24 @@
             font-size: 24px;
         }
 
+        .submit-container {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .submit-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .panel {
             background: white;
             border: 1px solid #dcdcdc;
             border-radius: 6px;
-            padding: 25px;
-            max-width: 700px;
+            padding: 20px;
         }
 
         .panel-title {
@@ -196,6 +208,16 @@
             margin-bottom: 15px;
             font-size: 13px;
         }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
     </style>
 </head>
 
@@ -213,7 +235,7 @@
                     <a href="{{ route('account') }}" class="menu-link">My Account</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('map') }}" class="menu-link">Map</a>
+                    <a href="#" onclick="alert('Search functionality coming soon!')" class="menu-link">Search Region</a>
                 </li>
                 <li class="menu-item">
                     <a href="{{ route('public.observations.create') }}" class="menu-link active">Submit Observation</a>
@@ -236,158 +258,176 @@
             <h1>Submit Observation Report</h1>
         </div>
 
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
         @if ($errors->any())
-            <div class="alert alert-danger" style="max-width: 700px;">
+            <div class="alert alert-danger" style="max-width: 100%;">
                 @foreach ($errors->all() as $error)
                     <div>{{ $error }}</div>
                 @endforeach
             </div>
         @endif
 
-        <div class="panel">
-            <div class="panel-title">Submit Field Observation Report</div>
+        <div class="submit-container">
+            <!-- Left Column: Submission Form -->
+            <div class="panel">
+                <div class="panel-title">Submit Field Observation Report</div>
 
-            <form action="{{ route('public.observations.submit') }}" method="POST" enctype="multipart/form-data"
-                style="display: flex; flex-direction: column; gap: 15px;">
-                @csrf
+                <form action="{{ route('public.observations.submit') }}" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 15px;">
+                    @csrf
 
-                <div class="form-group">
-                    <label for="flora_id">Registered Species (Optional)</label>
-                    <select id="flora_id" name="flora_id" onchange="toggleCustomFlora(this)" class="form-control"
-                        style="height: 35px;">
-                        <option value="">-- Select Registered Species (or enter custom below) --</option>
-                        @foreach ($registeredFlora as $flora)
-                            <option value="{{ $flora->flora_id }}"
-                                {{ old('flora_id') == $flora->flora_id ? 'selected' : '' }}>
-                                {{ $flora->scientific_name }} ({{ $flora->common_name ?? 'No common name' }})
-                            </option>
-                        @endforeach
-                        <option value="custom" {{ old('flora_id') === 'custom' ? 'selected' : '' }}>Other / Custom
-                            Species (Type manually)</option>
-                    </select>
-                </div>
-
-                <div id="custom-flora-group" class="form-group">
-                    <label for="flora_name_custom">Flora Species Name <span style="color: red;">*</span></label>
-                    <input type="text" id="flora_name_custom" name="flora_name_custom"
-                        placeholder="e.g. Ficus sycomorus" class="form-control" style="height: 35px;"
-                        value="{{ old('flora_name_custom') }}" required>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="form-group">
-                        <label for="location">Location / Region <span style="color: red;">*</span></label>
-                        <input type="text" id="location" name="location"
-                            placeholder="e.g. Mau Forest Complex Block B" class="form-control" style="height: 35px;"
-                            value="{{ old('location') }}" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="date_observed">Date Observed <span style="color: red;">*</span></label>
-                        <input type="date" id="date_observed" name="date_observed" max="{{ date('Y-m-d') }}"
-                            class="form-control" style="height: 35px;" value="{{ old('date_observed') }}" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="description">Text Observations & Details <span style="color: red;">*</span></label>
-                    <textarea id="description" name="description"
-                        placeholder="Describe the health status, canopy density, soil conditions, tree damage, or other text observations..."
-                        rows="4" class="form-control" style="resize: vertical;" required>{{ old('description') }}</textarea>
-                </div>
-
-                <!-- Quantitative Metrics (Climate & Vegetation) -->
-                <div style="border-top: 1px solid #eee; padding-top: 15px; margin-top: 5px;">
-                    <h4 style="margin: 0 0 10px 0; color: #1e5631; font-size: 14px; font-weight: bold;">Quantitative
-                        Field Metrics (Optional)</h4>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                        <div class="form-group">
-                            <label for="temperature_celsius">Temperature (°C)</label>
-                            <input type="number" step="0.1" min="-10" max="60" id="temperature_celsius"
-                                name="temperature_celsius" placeholder="e.g. 24.5" class="form-control"
-                                style="height: 35px;" value="{{ old('temperature_celsius') }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="rainfall_mm">Rainfall (mm)</label>
-                            <input type="number" step="0.1" min="0" max="5000" id="rainfall_mm"
-                                name="rainfall_mm" placeholder="e.g. 150.2" class="form-control"
-                                style="height: 35px;" value="{{ old('rainfall_mm') }}">
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                        <div class="form-group">
-                            <label for="humidity_percent">Humidity (%)</label>
-                            <input type="number" step="0.1" min="0" max="100"
-                                id="humidity_percent" name="humidity_percent" placeholder="e.g. 65.0"
-                                class="form-control" style="height: 35px;" value="{{ old('humidity_percent') }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="drought_index">Drought Index</label>
-                            <input type="number" step="0.1" min="0" max="10" id="drought_index"
-                                name="drought_index" placeholder="e.g. 2.5 (0-10 scale)" class="form-control"
-                                style="height: 35px;" value="{{ old('drought_index') }}">
-                        </div>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-                        <div class="form-group">
-                            <label for="ndvi_value">NDVI (-1.0 to 1.0)</label>
-                            <input type="number" step="0.001" min="-1" max="1" id="ndvi_value"
-                                name="ndvi_value" placeholder="e.g. 0.452" class="form-control"
-                                style="height: 35px;" value="{{ old('ndvi_value') }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="vegetation_cover_percent">Veg Cover (%)</label>
-                            <input type="number" step="0.1" min="0" max="100"
-                                id="vegetation_cover_percent" name="vegetation_cover_percent" placeholder="e.g. 75.5"
-                                class="form-control" style="height: 35px;"
-                                value="{{ old('vegetation_cover_percent') }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="vegetation_condition">Veg Condition</label>
-                            <select id="vegetation_condition" name="vegetation_condition" class="form-control"
-                                style="background: #fff; height: 35px;">
-                                <option value="">-- Select --</option>
-                                <option value="Healthy"
-                                    {{ old('vegetation_condition') === 'Healthy' ? 'selected' : '' }}>Healthy</option>
-                                <option value="Moderate"
-                                    {{ old('vegetation_condition') === 'Moderate' ? 'selected' : '' }}>Moderate
+                        <label for="flora_id">Registered Species (Optional)</label>
+                        <select id="flora_id" name="flora_id" onchange="toggleCustomFlora(this)" class="form-control" style="height: 35px;">
+                            <option value="">-- Select Registered Species (or enter custom below) --</option>
+                            @foreach ($registeredFlora as $flora)
+                                <option value="{{ $flora->flora_id }}" {{ old('flora_id') == $flora->flora_id ? 'selected' : '' }}>
+                                    {{ $flora->scientific_name }} ({{ $flora->common_name ?? 'No common name' }})
                                 </option>
-                                <option value="Stressed"
-                                    {{ old('vegetation_condition') === 'Stressed' ? 'selected' : '' }}>Stressed
-                                </option>
-                                <option value="Degraded"
-                                    {{ old('vegetation_condition') === 'Degraded' ? 'selected' : '' }}>Degraded
-                                </option>
-                            </select>
+                            @endforeach
+                            <option value="custom" {{ old('flora_id') === 'custom' ? 'selected' : '' }}>Other / Custom Species (Type manually)</option>
+                        </select>
+                    </div>
+
+                    <div id="custom-flora-group" class="form-group">
+                        <label for="flora_name_custom">Flora Species Name <span style="color: red;">*</span></label>
+                        <input type="text" id="flora_name_custom" name="flora_name_custom" placeholder="e.g. Ficus sycomorus" class="form-control" style="height: 35px;" value="{{ old('flora_name_custom') }}" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label for="location">Location / Region <span style="color: red;">*</span></label>
+                            <input type="text" id="location" name="location" placeholder="e.g. Mau Forest Complex Block B" class="form-control" style="height: 35px;" value="{{ old('location') }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="date_observed">Date Observed <span style="color: red;">*</span></label>
+                            <input type="date" id="date_observed" name="date_observed" max="{{ date('Y-m-d') }}" class="form-control" style="height: 35px;" value="{{ old('date_observed') }}" required>
                         </div>
                     </div>
-                </div>
 
-                <div
-                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid #eee; padding-top: 15px;">
                     <div class="form-group">
-                        <label for="image_file">Supporting Image <span style="color: red;">*</span></label>
-                        <input type="file" id="image_file" name="image_file" accept="image/*"
-                            style="width: 100%; font-size: 12px;" required>
-                        <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">PNG, JPG, JPEG up
-                            to 4MB</small>
+                        <label for="description">Text Observations & Details <span style="color: red;">*</span></label>
+                        <textarea id="description" name="description" placeholder="Describe the health status, canopy density, soil conditions, tree damage, or other text observations..." rows="4" class="form-control" style="resize: vertical;" required>{{ old('description') }}</textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="csv_file">Supporting CSV Data <span style="color: red;">*</span></label>
-                        <input type="file" id="csv_file" name="csv_file" accept=".csv,.txt"
-                            style="width: 100%; font-size: 12px;" required>
-                        <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">CSV file with
-                            scientific details</small>
-                    </div>
-                </div>
 
-                <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
-                    <button type="submit" class="btn-submit">Submit Report</button>
-                    <a href="{{ route('public.dashboard') }}" class="btn-cancel">Cancel</a>
+                    <!-- Quantitative Metrics (Climate & Vegetation) -->
+                    <div style="border-top: 1px solid #eee; padding-top: 15px; margin-top: 5px;">
+                        <h4 style="margin: 0 0 10px 0; color: #1e5631; font-size: 14px; font-weight: bold;">Quantitative Field Metrics (Optional)</h4>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label for="temperature_celsius">Temperature (°C)</label>
+                                <input type="number" step="0.1" min="-10" max="60" id="temperature_celsius" name="temperature_celsius" placeholder="e.g. 24.5" class="form-control" style="height: 35px;" value="{{ old('temperature_celsius') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="rainfall_mm">Rainfall (mm)</label>
+                                <input type="number" step="0.1" min="0" max="5000" id="rainfall_mm" name="rainfall_mm" placeholder="e.g. 150.2" class="form-control" style="height: 35px;" value="{{ old('rainfall_mm') }}">
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label for="humidity_percent">Humidity (%)</label>
+                                <input type="number" step="0.1" min="0" max="100" id="humidity_percent" name="humidity_percent" placeholder="e.g. 65.0" class="form-control" style="height: 35px;" value="{{ old('humidity_percent') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="drought_index">Drought Index</label>
+                                <input type="number" step="0.1" min="0" max="10" id="drought_index" name="drought_index" placeholder="e.g. 2.5 (0-10 scale)" class="form-control" style="height: 35px;" value="{{ old('drought_index') }}">
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label for="ndvi_value">NDVI (-1.0 to 1.0)</label>
+                                <input type="number" step="0.001" min="-1" max="1" id="ndvi_value" name="ndvi_value" placeholder="e.g. 0.452" class="form-control" style="height: 35px;" value="{{ old('ndvi_value') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="vegetation_cover_percent">Veg Cover (%)</label>
+                                <input type="number" step="0.1" min="0" max="100" id="vegetation_cover_percent" name="vegetation_cover_percent" placeholder="e.g. 75.5" class="form-control" style="height: 35px;" value="{{ old('vegetation_cover_percent') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="vegetation_condition">Veg Condition</label>
+                                <select id="vegetation_condition" name="vegetation_condition" class="form-control" style="background: #fff; height: 35px;">
+                                    <option value="">-- Select --</option>
+                                    <option value="Healthy" {{ old('vegetation_condition') === 'Healthy' ? 'selected' : '' }}>Healthy</option>
+                                    <option value="Moderate" {{ old('vegetation_condition') === 'Moderate' ? 'selected' : '' }}>Moderate</option>
+                                    <option value="Stressed" {{ old('vegetation_condition') === 'Stressed' ? 'selected' : '' }}>Stressed</option>
+                                    <option value="Degraded" {{ old('vegetation_condition') === 'Degraded' ? 'selected' : '' }}>Degraded</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <div class="form-group">
+                            <label for="image_file">Supporting Image <span style="color: red;">*</span></label>
+                            <input type="file" id="image_file" name="image_file" accept="image/*" style="width: 100%; font-size: 12px;" required>
+                            <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">PNG, JPG, JPEG up to 4MB</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="csv_file">Supporting CSV Data <span style="color: red;">*</span></label>
+                            <input type="file" id="csv_file" name="csv_file" accept=".csv,.txt" style="width: 100%; font-size: 12px;" required>
+                            <small style="color: #666; font-size: 11px; display: block; margin-top: 3px;">CSV file with scientific details</small>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <button type="submit" class="btn-submit">Submit Report</button>
+                        <a href="{{ route('public.dashboard') }}" class="btn-cancel">Cancel</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: List of Submitted Reports -->
+            <div class="panel">
+                <div class="panel-title">My Submitted Observation Reports</div>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #dddddd; background: #f9f9f9; text-align: left;">
+                                <th style="padding: 10px; font-weight: bold;">Flora / Location</th>
+                                <th style="padding: 10px; font-weight: bold; width: 80px;">Status</th>
+                                <th style="padding: 10px; font-weight: bold; width: 80px; text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($myObservations as $obs)
+                                <tr style="border-bottom: 1px solid #eeeeee;">
+                                    <td style="padding: 10px;">
+                                        <strong style="color: #1e5631; display: block;">{{ $obs->flora_name }}</strong>
+                                        <span style="font-size: 11px; color: #666;">{{ $obs->location }}</span>
+                                        <div style="font-size: 11px; color: #888; margin-top: 3px;">Observed: {{ $obs->date_observed ? $obs->date_observed->format('Y-m-d') : 'N/A' }}</div>
+                                    </td>
+                                    <td style="padding: 10px; vertical-align: middle;">
+                                        <span style="font-weight: bold; padding: 2px 6px; border-radius: 4px; font-size: 10px; display: inline-block;
+                                            @if ($obs->status === 'Approved') color: #155724; background: #d4edda; border: 1px solid #c3e6cb;
+                                            @elseif ($obs->status === 'Rejected') color: #721c24; background: #f8d7da; border: 1px solid #f5c6cb;
+                                            @else color: #8a6d3b; background: #fcf8e3; border: 1px solid #faf2cc; @endif
+                                        ">
+                                            {{ $obs->status }}
+                                        </span>
+                                    </td>
+                                    <td style="padding: 10px; text-align: center; vertical-align: middle;">
+                                        <form action="{{ route('public.observations.delete', $obs->observation_id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this observation report?');">
+                                            @csrf
+                                            <button type="submit" style="background: #a94442; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" style="padding: 20px; text-align: center; color: #666;">You haven't submitted any observation reports yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 

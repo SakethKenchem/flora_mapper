@@ -57,6 +57,7 @@ Route::middleware('auth')->group(function () {
         // Submit observation report
         Route::get('/public/observations/submit', [DatasetController::class, 'showSubmitObservation'])->name('public.observations.create');
         Route::post('/public/observations/submit', [DatasetController::class, 'submitObservation'])->name('public.observations.submit');
+        Route::post('/public/observations/{observation_id}/delete', [DatasetController::class, 'deleteObservation'])->name('public.observations.delete');
     });
 
     // Researcher Area
