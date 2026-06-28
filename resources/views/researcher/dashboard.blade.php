@@ -799,6 +799,12 @@
             const status = document.getElementById('obs-status-filter').value;
             const level = document.getElementById('obs-level-filter').value;
 
+            // Dynamically update export link with active filters
+            const exportBtn = document.querySelector('a[href*="/researcher/export/observations"]');
+            if (exportBtn) {
+                exportBtn.href = `/researcher/export/observations?search=${encodeURIComponent(query)}&status=${status}&level=${level}`;
+            }
+
             const rows = document.querySelectorAll('.obs-row');
             rows.forEach(row => {
                 const rowStatus = row.getAttribute('data-status');

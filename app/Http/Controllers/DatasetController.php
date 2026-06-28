@@ -770,9 +770,33 @@ class DatasetController extends Controller
     }
 
     // Export Observations Queue as CSV
-    public function exportObservations()
+    public function exportObservations(Request $request)
     {
-        $observations = ObservationReport::with(['observer', 'reviewer', 'flora'])->latest()->get();
+        $query = ObservationReport::with(['observer', 'reviewer', 'flora']);
+
+        if ($request->filled('search')) {
+            $search = '%' . $request->search . '%';
+            $query->where(function($q) use ($search) {
+                $q->where('flora_name', 'like', $search)
+                  ->orWhere('location', 'like', $search)
+                  ->orWhereHas('observer', function($o) use ($search) {
+                      $o->where('full_name', 'like', $search);
+                  });
+            });
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('level') && $request->level !== 'all') {
+            $level = $request->level;
+            $query->whereHas('flora', function($q) use ($level) {
+                $q->where('vulnerability_level', $level);
+            });
+        }
+
+        $observations = $query->latest()->get();
 
         $headers = [
             "Content-type"        => "text/csv",
