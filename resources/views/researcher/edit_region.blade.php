@@ -228,9 +228,6 @@
                 <li class="menu-item">
                     <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI Data</a>
                 </li>
-                <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.flora.upload') }}" class="menu-link">Upload Flora Data</a>
-                </li>
             </ul>
 
             <div class="menu-label">Assessments</div>
@@ -238,12 +235,15 @@
                 <li class="menu-item">
                     <a href="{{ route('researcher.analysis') }}" class="menu-link">Run Assessment</a>
                 </li>
+                <li class="menu-item">
+                    <a href="{{ route('researcher.compare') }}" class="menu-link">Compare Regions</a>
+                </li>
             </ul>
 
             <div class="menu-label">Flora & Reports</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.flora.create') }}" class="menu-link">Add Flora Record</a>
+                    <a href="{{ route('researcher.flora.manage') }}" class="menu-link">Flora Registry</a>
                 </li>
                 <li class="menu-item">
                     <a href="{{ route('researcher.reports') }}" class="menu-link">Reports Manager</a>
