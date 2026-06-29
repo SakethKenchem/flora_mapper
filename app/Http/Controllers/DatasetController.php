@@ -791,9 +791,20 @@ class DatasetController extends Controller
 
         if ($request->filled('level') && $request->level !== 'all') {
             $level = $request->level;
-            $query->whereHas('flora', function($q) use ($level) {
-                $q->where('vulnerability_level', $level);
-            });
+            if ($level === 'Not Assessed') {
+                $query->where(function($q) {
+                    $q->whereDoesntHave('flora')
+                      ->orWhereHas('flora', function($fq) {
+                          $fq->whereNull('vulnerability_level')
+                             ->orWhere('vulnerability_level', 'Not Assessed')
+                             ->orWhere('vulnerability_level', '');
+                      });
+                });
+            } else {
+                $query->whereHas('flora', function($q) use ($level) {
+                    $q->where('vulnerability_level', $level);
+                });
+            }
         }
 
         $observations = $query->latest()->get();
