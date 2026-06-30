@@ -219,18 +219,51 @@
 
         /* Printable modal styles */
         @media print {
+            body {
+                display: block;
+                background: #ffffff;
+            }
+
             body * {
                 visibility: hidden;
             }
-            #report-print-content, #report-print-content * {
+
+            #report-view-modal,
+            #report-view-modal * {
                 visibility: visible;
             }
+
+            #report-view-modal {
+                display: block !important;
+                position: static !important;
+                top: auto !important;
+                left: auto !important;
+                width: auto !important;
+                height: auto !important;
+                background: transparent !important;
+                z-index: auto !important;
+                padding: 0 !important;
+            }
+
+            #report-view-modal>div {
+                max-width: none !important;
+                max-height: none !important;
+                overflow: visible !important;
+                box-shadow: none !important;
+            }
+
+            #report-print-content,
+            #report-print-content * {
+                visibility: visible;
+            }
+
             #report-print-content {
                 position: absolute;
                 left: 0;
                 top: 0;
                 width: 100%;
             }
+
             .no-print {
                 display: none !important;
             }
@@ -247,40 +280,54 @@
             <div class="menu-label">Account</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.dashboard') }}" class="menu-link{{ request()->routeIs('researcher.dashboard') ? ' active' : '' }}">Dashboard</a>
+                    <a href="{{ route('researcher.dashboard') }}"
+                        class="menu-link{{ request()->routeIs('researcher.dashboard') ? ' active' : '' }}">Dashboard</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('account') }}" class="menu-link{{ request()->routeIs('account') ? ' active' : '' }}">My Account</a>
+                    <a href="{{ route('account') }}"
+                        class="menu-link{{ request()->routeIs('account') ? ' active' : '' }}">My Account</a>
                 </li>
             </ul>
 
             <div class="menu-label">Datasets</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link{{ request()->routeIs('researcher.datasets.climate.upload') ? ' active' : '' }}">Upload Climate Data</a>
+                    <a href="{{ route('researcher.datasets.climate.upload') }}"
+                        class="menu-link{{ request()->routeIs('researcher.datasets.climate.upload') ? ' active' : '' }}">Upload
+                        Climate Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link{{ request()->routeIs('researcher.datasets.vegetation.upload') ? ' active' : '' }}">Upload NDVI Data</a>
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}"
+                        class="menu-link{{ request()->routeIs('researcher.datasets.vegetation.upload') ? ' active' : '' }}">Upload
+                        NDVI Data</a>
                 </li>
             </ul>
 
             <div class="menu-label">Assessments</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.analysis') }}" class="menu-link{{ request()->routeIs('researcher.analysis') ? ' active' : '' }}">Run Assessment</a>
+                    <a href="{{ route('researcher.analysis') }}"
+                        class="menu-link{{ request()->routeIs('researcher.analysis') ? ' active' : '' }}">Run
+                        Assessment</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.compare') }}" class="menu-link{{ request()->routeIs('researcher.compare') ? ' active' : '' }}">Compare Regions</a>
+                    <a href="{{ route('researcher.compare') }}"
+                        class="menu-link{{ request()->routeIs('researcher.compare') ? ' active' : '' }}">Compare
+                        Regions</a>
                 </li>
             </ul>
 
             <div class="menu-label">Flora & Reports</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.flora.manage') }}" class="menu-link{{ request()->routeIs('researcher.flora.manage') ? ' active' : '' }}">Flora Registry</a>
+                    <a href="{{ route('researcher.flora.manage') }}"
+                        class="menu-link{{ request()->routeIs('researcher.flora.manage') ? ' active' : '' }}">Flora
+                        Registry</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.reports') }}" class="menu-link{{ request()->routeIs('researcher.reports') ? ' active' : '' }}">Reports Manager</a>
+                    <a href="{{ route('researcher.reports') }}"
+                        class="menu-link{{ request()->routeIs('researcher.reports') ? ' active' : '' }}">Reports
+                        Manager</a>
                 </li>
             </ul>
         </div>
@@ -327,9 +374,11 @@
                                     <td><strong>{{ $report->report_title }}</strong></td>
                                     <td>{{ $report->report_type }}</td>
                                     <td>{{ $report->creator ? $report->creator->full_name : 'System' }}</td>
-                                    <td>{{ $report->created_at ? $report->created_at->format('Y-m-d H:i') : 'N/A' }}</td>
+                                    <td>{{ $report->created_at ? $report->created_at->format('Y-m-d H:i') : 'N/A' }}
+                                    </td>
                                     <td>
-                                        <button onclick="openReportModal({{ $report->report_id }})" class="btn-action">View Report</button>
+                                        <button onclick="openReportModal({{ $report->report_id }})"
+                                            class="btn-action">View Report</button>
                                     </td>
                                 </tr>
                             @empty
@@ -352,7 +401,8 @@
 
                     <div class="form-group">
                         <label for="report_title">Report Title</label>
-                        <input type="text" id="report_title" name="report_title" class="form-control" placeholder="e.g. Q3 Regional Vulnerability Assessment" required>
+                        <input type="text" id="report_title" name="report_title" class="form-control"
+                            placeholder="e.g. Q3 Regional Vulnerability Assessment" required>
                     </div>
 
                     <div class="form-group">
@@ -371,15 +421,21 @@
     </div>
 
     <!-- View Report Modal -->
-    <div id="report-view-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
-        <div style="background: white; border: 1px solid #cccccc; border-radius: 6px; width: 100%; max-width: 800px; max-height: 90%; overflow-y: auto; padding: 30px; box-sizing: border-box; position: relative; font-family: Arial, sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
-            <button onclick="closeReportModal()" class="no-print" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; font-weight: bold; cursor: pointer; color: #666666;">&times;</button>
-            
+    <div id="report-view-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+        <div
+            style="background: white; border: 1px solid #cccccc; border-radius: 6px; width: 100%; max-width: 800px; max-height: 90%; overflow-y: auto; padding: 30px; box-sizing: border-box; position: relative; font-family: Arial, sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+            <button onclick="closeReportModal()" class="no-print"
+                style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; font-weight: bold; cursor: pointer; color: #666666;">&times;</button>
+
             <div id="report-print-content">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e5631; padding-bottom: 10px; margin-bottom: 20px;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e5631; padding-bottom: 10px; margin-bottom: 20px;">
                     <div>
-                        <h1 id="modal-report-title" style="margin: 0; color: #1e5631; font-size: 20px; font-weight: bold;">Report Title</h1>
-                        <span id="modal-report-type" style="font-size: 12px; color: #666666; font-weight: bold;">Report Type</span>
+                        <h1 id="modal-report-title"
+                            style="margin: 0; color: #1e5631; font-size: 20px; font-weight: bold;">Report Title</h1>
+                        <span id="modal-report-type" style="font-size: 12px; color: #666666; font-weight: bold;">Report
+                            Type</span>
                     </div>
                     <div style="text-align: right; font-size: 11px; color: #555555; line-height: 1.4;">
                         <strong>Generated by:</strong> <span id="modal-report-creator"></span><br>
@@ -392,9 +448,13 @@
                 </div>
             </div>
 
-            <div class="no-print" style="margin-top: 30px; text-align: right; border-top: 1px solid #eeeeee; padding-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
-                <button onclick="window.print()" style="background: #1e5631; border: 1px solid #1e5631; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: white;">Print Report</button>
-                <button onclick="closeReportModal()" style="background: #e2e8f0; border: 1px solid #cccccc; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: #333333;">Close</button>
+            <div class="no-print"
+                style="margin-top: 30px; text-align: right; border-top: 1px solid #eeeeee; padding-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="window.print()"
+                    style="background: #1e5631; border: 1px solid #1e5631; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: white;">Print
+                    Report</button>
+                <button onclick="closeReportModal()"
+                    style="background: #e2e8f0; border: 1px solid #cccccc; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: #333333;">Close</button>
             </div>
         </div>
     </div>
@@ -414,7 +474,8 @@
                     const r = data.report;
                     document.getElementById('modal-report-title').innerText = r.report_title;
                     document.getElementById('modal-report-type').innerText = r.report_type;
-                    document.getElementById('modal-report-creator').innerText = r.creator ? r.creator.full_name : 'System';
+                    document.getElementById('modal-report-creator').innerText = r.creator ? r.creator.full_name :
+                        'System';
                     document.getElementById('modal-report-date').innerText = data.formatted_date;
                     document.getElementById('modal-report-body').innerHTML = r.content;
                 })
