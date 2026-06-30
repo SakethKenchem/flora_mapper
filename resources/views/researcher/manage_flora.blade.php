@@ -234,44 +234,47 @@
             <div class="menu-label">Account</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.dashboard') }}" class="menu-link">Dashboard</a>
+                    <a href="{{ route('researcher.dashboard') }}" class="menu-link{{ request()->routeIs('researcher.dashboard') ? ' active' : '' }}">Dashboard</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('account') }}" class="menu-link">My Account</a>
+                    <a href="{{ route('account') }}" class="menu-link{{ request()->routeIs('account') ? ' active' : '' }}">My Account</a>
                 </li>
             </ul>
 
             <div class="menu-label">Datasets</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate Data</a>
+                    <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link{{ request()->routeIs('researcher.datasets.climate.upload') ? ' active' : '' }}">Upload Climate Data</a>
                 </li>
                 <li class="menu-item">
-                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI Data</a>
+                    <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link{{ request()->routeIs('researcher.datasets.vegetation.upload') ? ' active' : '' }}">Upload NDVI Data</a>
                 </li>
             </ul>
 
             <div class="menu-label">Assessments</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.analysis') }}" class="menu-link">Run Assessment</a>
+                    <a href="{{ route('researcher.analysis') }}" class="menu-link{{ request()->routeIs('researcher.analysis') ? ' active' : '' }}">Run Assessment</a>
+                </li>
+                <li class="menu-item">
+                    <a href="{{ route('researcher.compare') }}" class="menu-link{{ request()->routeIs('researcher.compare') ? ' active' : '' }}">Compare Regions</a>
                 </li>
             </ul>
 
             <div class="menu-label">Flora & Reports</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.flora.manage') }}" class="menu-link active">Flora Registry</a>
+                    <a href="{{ route('researcher.flora.manage') }}" class="menu-link{{ request()->routeIs('researcher.flora.manage') ? ' active' : '' }}">Flora Registry</a>
                 </li>
                 <li class="menu-item">
-                    <a href="#" class="menu-link">Reports Manager</a>
+                    <a href="{{ route('researcher.reports') }}" class="menu-link{{ request()->routeIs('researcher.reports') ? ' active' : '' }}">Reports Manager</a>
                 </li>
             </ul>
         </div>
 
         <div class="user-panel">
             <strong>{{ Auth::user()->full_name }}</strong><br>
-            <span style="font-size: 11px; color: #a3e635;">{{ Auth::user()->institution ?? 'Researcher' }}</span>
+            <span style="font-size: 11px; color: #a3e635;">{{ Auth::user()->institution ?? 'KEFRI Researcher' }}</span>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="btn-logout">Logout</button>
