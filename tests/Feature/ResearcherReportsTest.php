@@ -55,4 +55,23 @@ class ResearcherReportsTest extends TestCase
             'generated_by' => $this->researcher->user_id,
         ]);
     }
+
+    public function test_researcher_can_download_compiled_report(): void
+    {
+        $report = Report::create([
+            'generated_by' => $this->researcher->user_id,
+            'report_title' => 'Sample Assessment Report',
+            'report_type' => 'Ecosystem Vulnerability Summary',
+            'content' => '<p>Report Body Content</p>'
+        ]);
+
+        $response = $this->actingAs($this->researcher)
+            ->get(route('researcher.reports.download', $report->report_id));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+        $response->assertHeader('Content-Disposition', 'attachment; filename="sample_assessment_report.html"');
+        $response->assertSee('Sample Assessment Report');
+        $response->assertSee('Report Body Content');
+    }
 }

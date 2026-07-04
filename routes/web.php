@@ -108,10 +108,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/researcher/reports', [DatasetController::class, 'showReports'])->name('researcher.reports');
         Route::post('/researcher/reports', [DatasetController::class, 'generateReport'])->name('researcher.reports.generate');
         Route::get('/researcher/reports/{report_id}', [DatasetController::class, 'viewReport'])->name('researcher.reports.view');
+        Route::get('/researcher/reports/{report_id}/download', [DatasetController::class, 'downloadReport'])->name('researcher.reports.download');
 
         // Analysis console
         Route::get('/researcher/analysis', [DatasetController::class, 'showAnalysis'])->name('researcher.analysis');
         Route::post('/researcher/analysis', [DatasetController::class, 'runAnalysis'])->name('researcher.analysis.submit');
+        Route::get('/researcher/compare/download', [DatasetController::class, 'downloadComparison'])->name('researcher.compare.download');
 
         //delete all uploaded datasets
         Route::post('/researcher/datasets/delete', [DatasetController::class, 'deleteAllUploads'])->name('researcher.deleteUploads');

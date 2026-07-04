@@ -66,4 +66,20 @@ class ResearcherCompareTest extends TestCase
         $response->assertSee('Mau Forest Complex');
         $response->assertSee('Tana Delta');
     }
+
+    public function test_researcher_can_download_comparison_report(): void
+    {
+        $response = $this->actingAs($this->researcher)
+            ->get(route('researcher.compare.download', [
+                'region_a' => $this->regionA->region_id,
+                'region_b' => $this->regionB->region_id,
+            ]));
+
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+        $response->assertHeader('Content-Disposition', 'attachment; filename="comparison_mau_forest_complex_vs_tana_delta.html"');
+        $response->assertSee('Ecosystem Comparison Report');
+        $response->assertSee('Mau Forest Complex');
+        $response->assertSee('Tana Delta');
+    }
 }

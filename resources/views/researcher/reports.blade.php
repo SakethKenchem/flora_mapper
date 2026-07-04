@@ -379,6 +379,8 @@
                                     <td>
                                         <button onclick="openReportModal({{ $report->report_id }})"
                                             class="btn-action">View Report</button>
+                                        <a href="{{ route('researcher.reports.download', $report->report_id) }}"
+                                            class="btn-action" style="background: #3b82f6; border-color: #3b82f6; margin-left: 5px;">Download</a>
                                     </td>
                                 </tr>
                             @empty
@@ -450,6 +452,8 @@
 
             <div class="no-print"
                 style="margin-top: 30px; text-align: right; border-top: 1px solid #eeeeee; padding-top: 15px; display: flex; justify-content: flex-end; gap: 10px;">
+                <a id="modal-report-download-btn" href="#"
+                    style="background: #3b82f6; border: 1px solid #3b82f6; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: white; text-decoration: none; display: inline-flex; align-items: center;">Download HTML</a>
                 <button onclick="window.print()"
                     style="background: #1e5631; border: 1px solid #1e5631; padding: 8px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; color: white;">Print
                     Report</button>
@@ -466,6 +470,7 @@
 
             document.getElementById('modal-report-title').innerText = "Loading Report...";
             document.getElementById('modal-report-body').innerHTML = "";
+            document.getElementById('modal-report-download-btn').href = `/researcher/reports/${reportId}/download`;
             modal.style.display = 'flex';
 
             fetch(`/researcher/reports/${reportId}`)

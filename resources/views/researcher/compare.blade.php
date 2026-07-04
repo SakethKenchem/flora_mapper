@@ -356,6 +356,15 @@
             </form>
         </div>
 
+        @if($regionA && $regionB)
+            <div style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
+                <a href="{{ route('researcher.compare.download', ['region_a' => $regionAId, 'region_b' => $regionBId]) }}" 
+                   class="btn-compare" style="background: #3b82f6; text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                   Download Comparison Report
+                </a>
+            </div>
+        @endif
+
         <div class="comparison-grid">
             <!-- Region A Profile Card -->
             <div class="region-card">
