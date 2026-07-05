@@ -2,12 +2,60 @@ region_name,record_date,ndvi_value,vegetation_cover_percent,vegetation_condition
 Mau Forest Complex,2026-06-01,0.720,85.5,Good,Landsat 8
 Mau Forest Complex,2026-06-02,0.740,88.0,Excellent,Landsat 8
 Mau Forest Complex,2026-06-03,0.710,84.0,Good,Landsat 8
+Mau Forest Complex,2026-06-04,0.730,86.5,Good,Landsat 8
+Mau Forest Complex,2026-06-05,0.735,87.0,Excellent,Landsat 8
+Mau Forest Complex,2026-06-06,0.715,84.5,Good,Landsat 8
+Mau Forest Complex,2026-06-07,0.725,86.0,Good,Landsat 8
+Mau Forest Complex,2026-06-08,0.742,88.5,Excellent,Landsat 8
+Mau Forest Complex,2026-06-09,0.708,83.8,Good,Landsat 8
+Mau Forest Complex,2026-06-10,0.718,84.8,Good,Landsat 8
+Mau Forest Complex,2026-06-11,0.738,87.2,Excellent,Landsat 8
+Mau Forest Complex,2026-06-12,0.745,89.0,Excellent,Landsat 8
+Mau Forest Complex,2026-06-13,0.721,85.2,Good,Landsat 8
+Mau Forest Complex,2026-06-14,0.728,86.2,Good,Landsat 8
+Mau Forest Complex,2026-06-15,0.732,86.8,Excellent,Landsat 8
 Tana Delta,2026-06-01,0.320,35.2,Poor,Sentinel-2
 Tana Delta,2026-06-02,0.300,32.0,Critical,Sentinel-2
 Tana Delta,2026-06-03,0.340,38.5,Poor,Sentinel-2
+Tana Delta,2026-06-04,0.310,34.0,Poor,Sentinel-2
+Tana Delta,2026-06-05,0.295,31.5,Critical,Sentinel-2
+Tana Delta,2026-06-06,0.330,37.0,Poor,Sentinel-2
+Tana Delta,2026-06-07,0.325,36.0,Poor,Sentinel-2
+Tana Delta,2026-06-08,0.305,33.0,Critical,Sentinel-2
+Tana Delta,2026-06-09,0.280,29.5,Critical,Sentinel-2
+Tana Delta,2026-06-10,0.350,40.0,Fair,Sentinel-2
+Tana Delta,2026-06-11,0.315,34.5,Poor,Sentinel-2
+Tana Delta,2026-06-12,0.298,31.8,Critical,Sentinel-2
+Tana Delta,2026-06-13,0.322,35.5,Poor,Sentinel-2
+Tana Delta,2026-06-14,0.302,32.5,Critical,Sentinel-2
+Tana Delta,2026-06-15,0.318,34.8,Poor,Sentinel-2
 Mt. Kenya region,2026-06-01,0.680,78.0,Good,Landsat 8
 Mt. Kenya region,2026-06-02,0.650,75.4,Fair,Landsat 8
 Mt. Kenya region,2026-06-03,0.690,80.2,Good,Landsat 8
+Mt. Kenya region,2026-06-04,0.670,77.5,Good,Landsat 8
+Mt. Kenya region,2026-06-05,0.665,76.0,Fair,Landsat 8
+Mt. Kenya region,2026-06-06,0.685,79.0,Good,Landsat 8
+Mt. Kenya region,2026-06-07,0.675,78.5,Good,Landsat 8
+Mt. Kenya region,2026-06-08,0.655,75.8,Fair,Landsat 8
+Mt. Kenya region,2026-06-09,0.692,80.5,Good,Landsat 8
+Mt. Kenya region,2026-06-10,0.668,76.5,Fair,Landsat 8
+Mt. Kenya region,2026-06-11,0.678,78.2,Good,Landsat 8
+Mt. Kenya region,2026-06-12,0.682,78.8,Good,Landsat 8
+Mt. Kenya region,2026-06-13,0.662,75.9,Fair,Landsat 8
+Mt. Kenya region,2026-06-14,0.671,77.8,Good,Landsat 8
+Mt. Kenya region,2026-06-15,0.688,80.0,Good,Landsat 8
 Turkana,2026-06-01,0.180,12.5,Stressed,Sentinel-2
 Turkana,2026-06-02,0.170,11.0,Degraded,Sentinel-2
 Turkana,2026-06-03,0.190,13.5,Stressed,Sentinel-2
+Turkana,2026-06-04,0.175,11.8,Degraded,Sentinel-2
+Turkana,2026-06-05,0.165,10.5,Degraded,Sentinel-2
+Turkana,2026-06-06,0.185,12.8,Stressed,Sentinel-2
+Turkana,2026-06-07,0.182,12.4,Stressed,Sentinel-2
+Turkana,2026-06-08,0.172,11.5,Degraded,Sentinel-2
+Turkana,2026-06-09,0.160,10.0,Degraded,Sentinel-2
+Turkana,2026-06-10,0.195,14.0,Stressed,Sentinel-2
+Turkana,2026-06-11,0.178,12.0,Stressed,Sentinel-2
+Turkana,2026-06-12,0.168,10.8,Degraded,Sentinel-2
+Turkana,2026-06-13,0.181,12.6,Stressed,Sentinel-2
+Turkana,2026-06-14,0.166,10.6,Degraded,Sentinel-2
+Turkana,2026-06-15,0.179,12.2,Stressed,Sentinel-2

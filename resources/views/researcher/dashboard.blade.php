@@ -599,8 +599,9 @@
                         floraHtml += '<li>No registered species in this region.</li>';
                     } else {
                         data.flora.forEach(f => {
+                            const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(f.scientific_name)}`;
                             floraHtml +=
-                                `<li><strong>${f.scientific_name}</strong> (${f.common_name || 'N/A'}) - <em>${f.conservation_status || 'Unknown status'}</em></li>`;
+                                `<li><a href="${googleUrl}" target="_blank" style="color: #1e5631; font-weight: bold; text-decoration: underline;">${f.scientific_name}</a> (${f.common_name || 'N/A'}) - <em>${f.conservation_status || 'Unknown status'}</em></li>`;
                         });
                     }
                     floraHtml += '</ul>';

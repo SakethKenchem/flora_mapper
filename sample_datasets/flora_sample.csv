@@ -1,9 +1,17 @@
 region_name,scientific_name,common_name,species_type,conservation_status,habitat_type,vulnerability_level
-Mau Forest Complex,Podocarpus latifolius,Broad-leaved Yellowwood,Tree,Least Concern,Montane Forest,Low
+Mau Forest Complex,Ficus sycomorus,Sycamore Fig,Tree,Least Concern,Montane Forest,Low
+Mau Forest Complex,Podocarpus falcatus,East African Yellowwood,Tree,Vulnerable,Highland Canopy,High
 Mau Forest Complex,Juniperus procera,African Pencil Cedar,Tree,Near Threatened,Highland Forest,Moderate
+Mau Forest Complex,Dombeya torrida,Forest Dombeya,Shrub,Least Concern,Highland Forest,Low
+Tana Delta,Rhizophora mucronata,Loop-root Mangrove,Mangrove,Least Concern,Estuary/Mangrove,High
 Tana Delta,Avicennia marina,Grey Mangrove,Mangrove,Least Concern,Intertidal Swamps,High
-Tana Delta,Sonneratia alba,Apple Mangrove,Mangrove,Least Concern,Coastal Mudflats,High
+Tana Delta,Ceriops tagal,Spurred Mangrove,Mangrove,Least Concern,Coastal Mudflats,Moderate
+Tana Delta,Suaeda monoica,Saltbird Bush,Shrub,Least Concern,Alkaline Flats,Moderate
+Mt. Kenya region,Olea europaea subsp. cuspidata,African Wild Olive,Tree,Near Threatened,Alpine Forest,Low
 Mt. Kenya region,Hagenia abyssinica,African Redwood,Tree,Least Concern,Subalpine Belt,Moderate
 Mt. Kenya region,Senecio keniodendron,Giant Groundsel,Rosette Tree,Vulnerable,Alpine Zone,High
+Mt. Kenya region,Lobelia telekii,Giant Lobelia,Herb,Near Threatened,Alpine Moorlands,High
 Turkana,Acacia tortilis,Umbrella Thorn,Tree,Least Concern,Arid Savannah,Moderate
-Turkana,Boscia senegalensis,Hanza,Shrub,Least Concern,Dry Scrubland,High
+Turkana,Salvadora persica,Toothbrush Tree,Shrub,Least Concern,Sandy Stream Beds,Low
+Turkana,Hyphaene compressa,Doum Palm,Palm,Least Concern,Semi-Arid Oasis,Moderate
+Turkana,Boscia coriacea,Bastard Shepherd Tree,Shrub,Least Concern,Dry Scrubland,Low

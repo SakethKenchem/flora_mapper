@@ -53,6 +53,7 @@ class DatabaseSeeder extends Seeder
         // Seed regions and default rules
         $this->call(RegionSeeder::class);
         $this->call(ThresholdSeeder::class);
+        $this->call(DatasetSeeder::class);
 
         // Seed Flora registry and observation reports
         $this->call(FloraSeeder::class);
