@@ -650,6 +650,36 @@ class DatasetController extends Controller
         ]);
     }
 
+    // Show dedicated page for reviewing an observation
+    public function showReviewObservation($observationId)
+    {
+        $observation = ObservationReport::with(['observer', 'reviewer', 'flora'])->findOrFail($observationId);
+
+        $csvData = [];
+        if ($observation->csv_path && Storage::exists($observation->csv_path)) {
+            $csvContent = Storage::get($observation->csv_path);
+            $fileHandle = fopen('php://temp', 'r+');
+            if ($fileHandle !== false) {
+                fwrite($fileHandle, $csvContent);
+                rewind($fileHandle);
+                $headers = fgetcsv($fileHandle);
+                $rows = [];
+                $count = 0;
+                while (($row = fgetcsv($fileHandle)) !== false && $count < 50) {
+                    $rows[] = $row;
+                    $count++;
+                }
+                fclose($fileHandle);
+                $csvData = [
+                    'headers' => $headers,
+                    'rows' => $rows,
+                ];
+            }
+        }
+
+        return view('researcher.review_observation', compact('observation', 'csvData'));
+    }
+
     // Review an observation (approve or reject)
     public function reviewObservation(Request $request, $observationId)
     {
@@ -665,7 +695,7 @@ class DatasetController extends Controller
             'researcher_id' => Auth::user()->user_id,
         ]);
 
-        return redirect()->back()->with('success', "Observation report has been successfully reviewed and marked as {$request->status}.");
+        return redirect()->route('researcher.dashboard')->with('success', "Observation report has been successfully reviewed and marked as {$request->status}.");
     }
 
     // Edit region details view

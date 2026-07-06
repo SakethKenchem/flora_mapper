@@ -58,6 +58,16 @@ class ResearcherReviewObservationsTest extends TestCase
         $response->assertJsonFragment(['flora_name' => 'Rhizophora mucronata']);
     }
 
+    public function test_researcher_can_access_observation_review_page(): void
+    {
+        $response = $this->actingAs($this->researcher)
+            ->get(route('researcher.observations.review.show', $this->observation->observation_id));
+
+        $response->assertStatus(200);
+        $response->assertSee('Review Public Observation');
+        $response->assertSee('Rhizophora mucronata');
+    }
+
     public function test_researcher_can_approve_observation_report(): void
     {
         $response = $this->actingAs($this->researcher)
@@ -66,7 +76,7 @@ class ResearcherReviewObservationsTest extends TestCase
                 'review_comment' => 'Validated by field logs',
             ]);
 
-        $response->assertRedirect();
+        $response->assertRedirect(route('researcher.dashboard'));
         $response->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('observation_reports', [
@@ -85,7 +95,7 @@ class ResearcherReviewObservationsTest extends TestCase
                 'review_comment' => 'Incorrect species classification',
             ]);
 
-        $response->assertRedirect();
+        $response->assertRedirect(route('researcher.dashboard'));
         $response->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('observation_reports', [

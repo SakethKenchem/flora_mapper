@@ -78,6 +78,7 @@ Route::middleware('auth')->group(function () {
 
         // Dynamic details and reviews for observation reports
         Route::get('/researcher/observations/{observation_id}/details', [DatasetController::class, 'getObservationDetails'])->name('researcher.observations.details');
+        Route::get('/researcher/observations/{observation_id}/review', [DatasetController::class, 'showReviewObservation'])->name('researcher.observations.review.show');
         Route::post('/researcher/observations/{observation_id}/review', [DatasetController::class, 'reviewObservation'])->name('researcher.observations.review');
 
         // Climate Dataset Ingestion
