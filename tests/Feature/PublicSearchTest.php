@@ -101,4 +101,24 @@ class PublicSearchTest extends TestCase
         $response->assertSee('No matching regions found.');
         $response->assertSee('No matching flora species found.');
     }
+
+    public function test_researcher_can_access_search_page_and_see_results(): void
+    {
+        $researcher = User::create([
+            'role_id' => 2, // RESEARCHER
+            'full_name' => 'Dr. Jane Researcher',
+            'email' => 'researcher@floramapper.com',
+            'password' => bcrypt('Password123'),
+            'account_status' => 'Active',
+        ]);
+
+        $response = $this->actingAs($researcher)
+            ->get(route('public.search', ['q' => 'Mau']));
+
+        $response->assertStatus(200);
+        $response->assertSee('Search Registry');
+        $response->assertSee('Matched Ecosystem Regions (1)');
+        $response->assertSee('Mau Forest Complex');
+        $response->assertSee('KEFRI Researcher'); // Verifies the researcher sidebar is dynamically loaded
+    }
 }

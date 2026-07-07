@@ -297,10 +297,16 @@
         <div>
             <span class="sidebar-brand">FloraMapper</span>
             
-            <div class="menu-label">Navigation</div>
+            <div class="menu-label">Account</div>
             <ul class="menu-list">
                 <li class="menu-item">
-                    <a href="{{ route('researcher.dashboard') }}" class="menu-link">Dashboard Home</a>
+                    <a href="{{ route('researcher.dashboard') }}" class="menu-link">Dashboard</a>
+                </li>
+                <li class="menu-item">
+                    <a href="{{ route('account') }}" class="menu-link">My Account</a>
+                </li>
+                <li class="menu-item">
+                    <a href="{{ route('public.search') }}" class="menu-link">Search Registry</a>
                 </li>
             </ul>
 

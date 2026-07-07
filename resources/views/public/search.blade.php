@@ -232,33 +232,91 @@
 <body>
 
     <div class="sidebar">
-        <div>
-            <a href="{{ route('home') }}" class="sidebar-brand">FloraMapper</a>
+        @if (Auth::user()->isResearcher())
+            <div>
+                <a href="{{ route('home') }}" class="sidebar-brand">FloraMapper</a>
 
-            <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="{{ route('public.dashboard') }}" class="menu-link">Dashboard</a>
-                </li>
-                <li class="menu-item">
-                    <a href="{{ route('account') }}" class="menu-link">My Account</a>
-                </li>
-                <li class="menu-item">
-                    <a href="{{ route('public.search') }}" class="menu-link active">Search Registry</a>
-                </li>
-                <li class="menu-item">
-                    <a href="{{ route('public.observations.create') }}" class="menu-link">Submit Observation</a>
-                </li>
-            </ul>
-        </div>
+                <div class="menu-label" style="font-size: 11px; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); margin: 15px 0 8px 0; font-weight: bold;">Account</div>
+                <ul class="menu-list" style="list-style: none; padding: 0; margin: 0 0 15px 0;">
+                    <li class="menu-item" style="margin-bottom: 8px;">
+                        <a href="{{ route('researcher.dashboard') }}" class="menu-link">Dashboard</a>
+                    </li>
+                    <li class="menu-item" style="margin-bottom: 8px;">
+                        <a href="{{ route('account') }}" class="menu-link">My Account</a>
+                    </li>
+                    <li class="menu-item" style="margin-bottom: 8px;">
+                        <a href="{{ route('public.search') }}" class="menu-link active">Search Registry</a>
+                    </li>
+                </ul>
 
-        <div class="user-panel">
-            <strong>{{ Auth::user()->full_name }}</strong><br>
-            <span>Observer Account</span>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-logout">Logout</button>
-            </form>
-        </div>
+                <div class="menu-label" style="font-size: 11px; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); margin: 15px 0 8px 0; font-weight: bold;">Datasets</div>
+                <ul class="menu-list" style="list-style: none; padding: 0; margin: 0 0 15px 0;">
+                    <li class="menu-item" style="margin-bottom: 8px;">
+                        <a href="{{ route('researcher.datasets.climate.upload') }}" class="menu-link">Upload Climate Data</a>
+                    </li>
+                    <li class="menu-item" style="margin-bottom: 8px;">
+                        <a href="{{ route('researcher.datasets.vegetation.upload') }}" class="menu-link">Upload NDVI Data</a>
+                    </li>
+                </ul>
+
+                <div class="menu-label" style="font-size: 11px; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); margin: 15px 0 8px 0; font-weight: bold;">Assessments</div>
+                <ul class="menu-list" style="list-style: none; padding: 0; margin: 0 0 15px 0;">
+                    <li class="menu-item" style="margin-bottom: 8px;">
+                        <a href="{{ route('researcher.analysis') }}" class="menu-link">Run Assessment</a>
+                    </li>
+                    <li class="menu-item" style="margin-bottom: 8px;">
+                        <a href="{{ route('researcher.compare') }}" class="menu-link">Compare Regions</a>
+                    </li>
+                </ul>
+
+                <div class="menu-label" style="font-size: 11px; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); margin: 15px 0 8px 0; font-weight: bold;">Flora & Reports</div>
+                <ul class="menu-list" style="list-style: none; padding: 0; margin: 0 0 15px 0;">
+                    <li class="menu-item" style="margin-bottom: 8px;">
+                        <a href="{{ route('researcher.flora.manage') }}" class="menu-link">Flora Registry</a>
+                    </li>
+                    <li class="menu-item" style="margin-bottom: 8px;">
+                        <a href="{{ route('researcher.reports') }}" class="menu-link">Reports Manager</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="user-panel">
+                <strong>{{ Auth::user()->full_name }}</strong><br>
+                <span style="font-size: 11px; color: #a3e635;">{{ Auth::user()->institution ?? 'KEFRI Researcher' }}</span>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn-logout">Logout</button>
+                </form>
+            </div>
+        @else
+            <div>
+                <a href="{{ route('home') }}" class="sidebar-brand">FloraMapper</a>
+
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="{{ route('public.dashboard') }}" class="menu-link">Dashboard</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('account') }}" class="menu-link">My Account</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('public.search') }}" class="menu-link active">Search Registry</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('public.observations.create') }}" class="menu-link">Submit Observation</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="user-panel">
+                <strong>{{ Auth::user()->full_name }}</strong><br>
+                <span>Observer Account</span>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn-logout">Logout</button>
+                </form>
+            </div>
+        @endif
     </div>
 
     <div class="main-content">

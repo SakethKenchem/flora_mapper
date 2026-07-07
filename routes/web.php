@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function () {
 
         // Search registry
         Route::get('/public/search', [DatasetController::class, 'publicSearch'])->name('public.search');
+        Route::get('/researcher/search', [DatasetController::class, 'researcherSearch'])->name('researcher.search');
 
         // Submit observation report
         Route::get('/public/observations/submit', [DatasetController::class, 'showSubmitObservation'])->name('public.observations.create');

@@ -239,6 +239,9 @@
                 <li class="menu-item">
                     <a href="{{ route('account') }}" class="menu-link{{ request()->routeIs('account') ? ' active' : '' }}">My Account</a>
                 </li>
+                <li class="menu-item">
+                    <a href="{{ route('public.search') }}" class="menu-link{{ request()->routeIs('public.search') ? ' active' : '' }}">Search Registry</a>
+                </li>
             </ul>
 
             <div class="menu-label">Datasets</div>
