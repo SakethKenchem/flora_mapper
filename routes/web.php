@@ -129,7 +129,7 @@ Route::middleware('auth')->group(function () {
             $activeObservers = \App\Models\User::where('role_id', 1)->where('account_status', 'Active')->count();
             $threshold = \App\Models\VulnerabilityThreshold::first();
             $thresholdCount = \App\Models\VulnerabilityThreshold::count();
-            $backupsCount = 12;
+            $backupsCount = \Illuminate\Support\Facades\Schema::hasTable('users_backup') ? 1 : 0;
 
             return view('admin.dashboard', compact('users', 'totalUsers', 'activeObservers', 'threshold', 'thresholdCount', 'backupsCount'));
         })->name('admin.dashboard');
@@ -146,5 +146,8 @@ Route::middleware('auth')->group(function () {
 
         // Update system configuration thresholds
         Route::post('/admin/thresholds', [AuthController::class, 'updateThresholds'])->name('admin.thresholds.update');
+
+        // Database backups management
+        Route::post('/admin/database/backup', [AuthController::class, 'triggerDatabaseBackup'])->name('admin.database.backup');
     });
 });

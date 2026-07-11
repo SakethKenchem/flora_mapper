@@ -318,10 +318,18 @@
                 </li>
             </ul>
 
-            <div class="menu-label">Auditing</div>
+            <div class="menu-label">Auditing & Backups</div>
             <ul class="menu-list">
                 <li class="menu-item">
                     <a href="#" onclick="alert('System records log auditor is under development.')" class="menu-link">System Records</a>
+                </li>
+                <li class="menu-item" style="margin-top: 10px;">
+                    <form action="{{ route('admin.database.backup') }}" method="POST" style="margin: 0;">
+                        @csrf
+                        <button type="submit" class="menu-link" style="width: 100%; border: none; background: #1e5631; color: white; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; text-align: center; font-size: 11px; display: block; box-sizing: border-box;">
+                            Backup Database
+                        </button>
+                    </form>
                 </li>
             </ul>
         </div>
@@ -368,6 +376,16 @@
             <div class="metric-card">
                 <span class="metric-label">Active Rule sets</span>
                 <span class="metric-value">{{ $thresholdCount }}</span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Redundant Backup</span>
+                <span class="metric-value" style="font-size: 13px; margin-top: 5px;">
+                    @if($backupsCount > 0)
+                        <span style="color: #155724; background: #d4edda; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #c3e6cb; display: inline-block;">Active & Safe</span>
+                    @else
+                        <span style="color: #721c24; background: #f8d7da; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #f5c6cb; display: inline-block;">Not Created</span>
+                    @endif
+                </span>
             </div>
         </div>
 

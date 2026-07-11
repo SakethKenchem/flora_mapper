@@ -152,4 +152,17 @@ class AdminUserManagementTest extends TestCase
 
         $response->assertSessionHasErrors(['institution']);
     }
+
+    public function test_admin_can_trigger_database_backup(): void
+    {
+        $response = $this->actingAs($this->adminUser)
+            ->post(route('admin.database.backup'));
+
+        $response->assertRedirect();
+        $response->assertSessionHasNoErrors();
+
+        // Verify that backup tables exist
+        $this->assertTrue(\Illuminate\Support\Facades\Schema::hasTable('users_backup'));
+        $this->assertTrue(\Illuminate\Support\Facades\Schema::hasTable('regions_backup'));
+    }
 }

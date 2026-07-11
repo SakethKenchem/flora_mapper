@@ -286,4 +286,36 @@ class AuthController extends Controller
 
         return back()->with('success', 'Vulnerability evaluation threshold mappings updated successfully.');
     }
+
+    // Trigger redundant database backup copy by duplicating tables
+    public function triggerDatabaseBackup()
+    {
+        $tables = [
+            'roles',
+            'users',
+            'regions',
+            'datasets',
+            'climate_data',
+            'vegetation_data',
+            'vulnerability_thresholds',
+            'vulnerability_assessments',
+            'flora',
+            'observation_reports',
+            'reports',
+        ];
+
+        try {
+            foreach ($tables as $table) {
+                // Drop existing backup table if present
+                \Illuminate\Support\Facades\DB::statement("DROP TABLE IF EXISTS `{$table}_backup`");
+                
+                // Create backup table as select copy (cross-compatible MySQL & SQLite)
+                \Illuminate\Support\Facades\DB::statement("CREATE TABLE `{$table}_backup` AS SELECT * FROM `{$table}`");
+            }
+            
+            return back()->with('success', 'Database backup completed successfully. All tables have been duplicated with a _backup suffix to create a redundant copy.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Database backup failed: ' . $e->getMessage()]);
+        }
+    }
 }
