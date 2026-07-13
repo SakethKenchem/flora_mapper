@@ -114,7 +114,7 @@
 <body>
 
     <div class="register-box">
-        <h2>Observer Register</h2>
+        <h2>Public Register</h2>
         <p class="subtitle">Create an account as a General Public user to report observations</p>
 
         @if ($errors->any())
