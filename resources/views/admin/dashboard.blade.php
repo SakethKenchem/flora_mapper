@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - FloraMapper</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             margin: 0;
@@ -389,6 +390,22 @@
             </div>
         </div>
 
+        <!-- Chart Visualization Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 25px;">
+            <div class="panel">
+                <div class="panel-title">User Roles Distribution</div>
+                <div style="position: relative; height: 260px; display: flex; justify-content: center; align-items: center;">
+                    <canvas id="userRolesChart" style="max-height: 240px; max-width: 240px;"></canvas>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-title">System Records Ingestion Summary</div>
+                <div style="position: relative; height: 260px; display: flex; justify-content: center; align-items: center;">
+                    <canvas id="databaseIngestionChart" style="max-height: 240px; max-width: 100%;"></canvas>
+                </div>
+            </div>
+        </div>
+
         <div class="workspace-row">
             <div class="panel">
                 <div class="panel-title">User Account Audit & Settings</div>
@@ -520,6 +537,67 @@
         function saveThresholds() {
             alert("Assessment thresholds updated successfully.");
         }
+
+        // Initialize Admin Analytics Charts
+        // 1. User Roles distribution (Doughnut Chart)
+        const rolesCtx = document.getElementById('userRolesChart').getContext('2d');
+        new Chart(rolesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['System Admin', 'KEFRI Researcher', 'Public Observer'],
+                datasets: [{
+                    data: [{{ $adminCount }}, {{ $researcherCount }}, {{ $publicCount }}],
+                    backgroundColor: ['#1f2937', '#1e5631', '#64748b'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { size: 10, family: 'Arial' }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Database Ingestion Summary (Bar Chart)
+        const ingestionCtx = document.getElementById('databaseIngestionChart').getContext('2d');
+        new Chart(ingestionCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Climate Logs', 'NDVI Indices', 'Flora Species', 'Public Reports'],
+                datasets: [{
+                    label: 'Records Count',
+                    data: [{{ $climateCount }}, {{ $vegCount }}, {{ $floraCount }}, {{ $observationCount }}],
+                    backgroundColor: ['#1e5631', '#a3e635', '#2e3d30', '#64748b'],
+                    borderWidth: 0,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        ticks: { font: { size: 10, family: 'Arial' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 10, family: 'Arial' } }
+                    }
+                }
+            }
+        });
     </script>
 
 </body>

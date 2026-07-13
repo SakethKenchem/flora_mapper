@@ -131,7 +131,21 @@ Route::middleware('auth')->group(function () {
             $thresholdCount = \App\Models\VulnerabilityThreshold::count();
             $backupsCount = \Illuminate\Support\Facades\Schema::hasTable('users_backup') ? 1 : 0;
 
-            return view('admin.dashboard', compact('users', 'totalUsers', 'activeObservers', 'threshold', 'thresholdCount', 'backupsCount'));
+            // Chart Metrics
+            $adminCount = \App\Models\User::where('role_id', 3)->count();
+            $researcherCount = \App\Models\User::where('role_id', 2)->count();
+            $publicCount = \App\Models\User::where('role_id', 1)->count();
+
+            $climateCount = \App\Models\ClimateData::count();
+            $vegCount = \App\Models\VegetationData::count();
+            $floraCount = \App\Models\Flora::count();
+            $observationCount = \App\Models\ObservationReport::count();
+
+            return view('admin.dashboard', compact(
+                'users', 'totalUsers', 'activeObservers', 'threshold', 'thresholdCount', 'backupsCount',
+                'adminCount', 'researcherCount', 'publicCount',
+                'climateCount', 'vegCount', 'floraCount', 'observationCount'
+            ));
         })->name('admin.dashboard');
 
         // User status manager (approve, reject, suspend, activate)
