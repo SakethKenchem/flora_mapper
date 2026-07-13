@@ -64,7 +64,8 @@
             font-size: 13px;
         }
 
-        .menu-link:hover, .menu-link.active {
+        .menu-link:hover,
+        .menu-link.active {
             background: rgba(255, 255, 255, 0.15);
         }
 
@@ -296,7 +297,6 @@
         .btn-execute:hover {
             background: #153e22;
         }
-
     </style>
 </head>
 
@@ -318,16 +318,12 @@
                     <a href="{{ route('account') }}" class="menu-link">My Account</a>
                 </li>
             </ul>
-
-            <div class="menu-label">Auditing & Backups</div>
             <ul class="menu-list">
-                <li class="menu-item">
-                    <a href="#" onclick="alert('System records log auditor is under development.')" class="menu-link">System Records</a>
-                </li>
                 <li class="menu-item" style="margin-top: 10px;">
                     <form action="{{ route('admin.database.backup') }}" method="POST" style="margin: 0;">
                         @csrf
-                        <button type="submit" class="menu-link" style="width: 100%; border: none; background: #1e5631; color: white; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; text-align: center; font-size: 11px; display: block; box-sizing: border-box;">
+                        <button type="submit" class="menu-link"
+                            style="width: 100%; border: none; background: #1e5631; color: white; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; text-align: center; font-size: 11px; display: block; box-sizing: border-box;">
                             Backup Database
                         </button>
                     </form>
@@ -348,7 +344,8 @@
     <div class="main-content">
         <div class="header">
             <h1>Admin Dashboard</h1>
-            <span style="font-size: 13px; background: #e2e8f0; padding: 4px 8px; border-radius: 4px;">System Admin Console</span>
+            <span style="font-size: 13px; background: #e2e8f0; padding: 4px 8px; border-radius: 4px;">System Admin
+                Console</span>
         </div>
 
         @if (session('success'))
@@ -381,10 +378,14 @@
             <div class="metric-card">
                 <span class="metric-label">Redundant Backup</span>
                 <span class="metric-value" style="font-size: 13px; margin-top: 5px;">
-                    @if($backupsCount > 0)
-                        <span style="color: #155724; background: #d4edda; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #c3e6cb; display: inline-block;">Active & Safe</span>
+                    @if ($backupsCount > 0)
+                        <span
+                            style="color: #155724; background: #d4edda; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #c3e6cb; display: inline-block;">Active
+                            & Safe</span>
                     @else
-                        <span style="color: #721c24; background: #f8d7da; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #f5c6cb; display: inline-block;">Not Created</span>
+                        <span
+                            style="color: #721c24; background: #f8d7da; padding: 4px 8px; border-radius: 4px; font-weight: bold; border: 1px solid #f5c6cb; display: inline-block;">Not
+                            Created</span>
                     @endif
                 </span>
             </div>
@@ -394,13 +395,15 @@
         <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 25px;">
             <div class="panel">
                 <div class="panel-title">User Roles Distribution</div>
-                <div style="position: relative; height: 260px; display: flex; justify-content: center; align-items: center;">
+                <div
+                    style="position: relative; height: 260px; display: flex; justify-content: center; align-items: center;">
                     <canvas id="userRolesChart" style="max-height: 240px; max-width: 240px;"></canvas>
                 </div>
             </div>
             <div class="panel">
                 <div class="panel-title">System Records Ingestion Summary</div>
-                <div style="position: relative; height: 260px; display: flex; justify-content: center; align-items: center;">
+                <div
+                    style="position: relative; height: 260px; display: flex; justify-content: center; align-items: center;">
                     <canvas id="databaseIngestionChart" style="max-height: 240px; max-width: 100%;"></canvas>
                 </div>
             </div>
@@ -433,7 +436,7 @@
                                     ? str_replace(
                                         ['SYSTEM_ADMINISTRATOR', 'GENERAL_PUBLIC'],
                                         ['ADMIN', 'PUBLIC'],
-                                        $user->role->role_name
+                                        $user->role->role_name,
                                     )
                                     : 'N/A';
                             @endphp
@@ -442,41 +445,53 @@
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $normalizedRole }}</td>
                                 <td>
-                                    <span class="status-badge @if($user->account_status === 'Suspended' || $user->account_status === 'Disabled') status-suspended @elseif($user->account_status === 'Pending') status-pending @endif">
+                                    <span
+                                        class="status-badge @if ($user->account_status === 'Suspended' || $user->account_status === 'Disabled') status-suspended @elseif($user->account_status === 'Pending') status-pending @endif">
                                         {{ $user->account_status }}
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.users.edit', $user->user_id) }}" class="btn-action" style="text-decoration:none; display:inline-block; line-height:1.4; text-align:center; background:#f9fafb;">Edit</a>
+                                    <a href="{{ route('admin.users.edit', $user->user_id) }}" class="btn-action"
+                                        style="text-decoration:none; display:inline-block; line-height:1.4; text-align:center; background:#f9fafb;">Edit</a>
                                     @if ($user->user_id !== Auth::user()->user_id)
                                         @if ($user->account_status === 'Pending')
-                                            <form action="{{ route('admin.users.status', $user->user_id) }}" method="POST" style="display:inline;">
+                                            <form action="{{ route('admin.users.status', $user->user_id) }}"
+                                                method="POST" style="display:inline;">
                                                 @csrf
                                                 <input type="hidden" name="status" value="Active">
-                                                <button type="submit" class="btn-action" style="background:#d4edda; color:#155724; border-color:#c3e6cb;">Approve</button>
+                                                <button type="submit" class="btn-action"
+                                                    style="background:#d4edda; color:#155724; border-color:#c3e6cb;">Approve</button>
                                             </form>
-                                            <form action="{{ route('admin.users.status', $user->user_id) }}" method="POST" style="display:inline;">
+                                            <form action="{{ route('admin.users.status', $user->user_id) }}"
+                                                method="POST" style="display:inline;">
                                                 @csrf
                                                 <input type="hidden" name="status" value="Disabled">
-                                                <button type="submit" class="btn-action" style="background:#f8d7da; color:#721c24; border-color:#f5c6cb;">Reject</button>
+                                                <button type="submit" class="btn-action"
+                                                    style="background:#f8d7da; color:#721c24; border-color:#f5c6cb;">Reject</button>
                                             </form>
                                         @elseif ($user->account_status === 'Active')
-                                            <form action="{{ route('admin.users.status', $user->user_id) }}" method="POST" style="display:inline;">
+                                            <form action="{{ route('admin.users.status', $user->user_id) }}"
+                                                method="POST" style="display:inline;">
                                                 @csrf
                                                 <input type="hidden" name="status" value="Suspended">
                                                 <button type="submit" class="btn-action">Suspend</button>
                                             </form>
                                         @else
-                                            <form action="{{ route('admin.users.status', $user->user_id) }}" method="POST" style="display:inline;">
+                                            <form action="{{ route('admin.users.status', $user->user_id) }}"
+                                                method="POST" style="display:inline;">
                                                 @csrf
                                                 <input type="hidden" name="status" value="Active">
-                                                <button type="submit" class="btn-action" style="background:#d4edda; color:#155724; border-color:#c3e6cb;">Activate</button>
+                                                <button type="submit" class="btn-action"
+                                                    style="background:#d4edda; color:#155724; border-color:#c3e6cb;">Activate</button>
                                             </form>
                                         @endif
-                                        <form action="{{ route('admin.users.delete', $user->user_id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to permanently delete user \'{{ $user->full_name }}\'? This action is irreversible.');">
+                                        <form action="{{ route('admin.users.delete', $user->user_id) }}"
+                                            method="POST" style="display:inline;"
+                                            onsubmit="return confirm('Are you sure you want to permanently delete user \'{{ $user->full_name }}\'? This action is irreversible.');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn-action" style="background:#f8d7da; color:#721c24; border-color:#f5c6cb; margin-left: 2px;">Delete</button>
+                                            <button type="submit" class="btn-action"
+                                                style="background:#f8d7da; color:#721c24; border-color:#f5c6cb; margin-left: 2px;">Delete</button>
                                         </form>
                                     @else
                                         <span style="font-size:11px; color:#666666;">Current Admin</span>
@@ -492,28 +507,40 @@
                 <div class="panel-title">Vulnerability Threshold Parameters</div>
                 <form method="POST" action="{{ route('admin.thresholds.update') }}">
                     @csrf
-                    
+
                     <div class="form-group">
                         <label>Low Vulnerability Range</label>
                         <div class="form-row">
-                            <input type="number" name="low_min" class="form-input" value="{{ old('low_min', $threshold ? intval($threshold->low_min) : 0) }}" min="0" max="100" required>
-                            <input type="number" name="low_max" class="form-input" value="{{ old('low_max', $threshold ? intval($threshold->low_max) : 30) }}" min="0" max="100" required>
+                            <input type="number" name="low_min" class="form-input"
+                                value="{{ old('low_min', $threshold ? intval($threshold->low_min) : 0) }}"
+                                min="0" max="100" required>
+                            <input type="number" name="low_max" class="form-input"
+                                value="{{ old('low_max', $threshold ? intval($threshold->low_max) : 30) }}"
+                                min="0" max="100" required>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Moderate Vulnerability Range</label>
                         <div class="form-row">
-                            <input type="number" name="moderate_min" class="form-input" value="{{ old('moderate_min', $threshold ? intval($threshold->moderate_min) : 31) }}" min="0" max="100" required>
-                            <input type="number" name="moderate_max" class="form-input" value="{{ old('moderate_max', $threshold ? intval($threshold->moderate_max) : 60) }}" min="0" max="100" required>
+                            <input type="number" name="moderate_min" class="form-input"
+                                value="{{ old('moderate_min', $threshold ? intval($threshold->moderate_min) : 31) }}"
+                                min="0" max="100" required>
+                            <input type="number" name="moderate_max" class="form-input"
+                                value="{{ old('moderate_max', $threshold ? intval($threshold->moderate_max) : 60) }}"
+                                min="0" max="100" required>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>High Vulnerability Range</label>
                         <div class="form-row">
-                            <input type="number" name="high_min" class="form-input" value="{{ old('high_min', $threshold ? intval($threshold->high_min) : 61) }}" min="0" max="100" required>
-                            <input type="number" name="high_max" class="form-input" value="{{ old('high_max', $threshold ? intval($threshold->high_max) : 100) }}" min="0" max="100" required>
+                            <input type="number" name="high_min" class="form-input"
+                                value="{{ old('high_min', $threshold ? intval($threshold->high_min) : 61) }}"
+                                min="0" max="100" required>
+                            <input type="number" name="high_max" class="form-input"
+                                value="{{ old('high_max', $threshold ? intval($threshold->high_max) : 100) }}"
+                                min="0" max="100" required>
                         </div>
                     </div>
 
@@ -558,7 +585,10 @@
                     legend: {
                         position: 'bottom',
                         labels: {
-                            font: { size: 10, family: 'Arial' }
+                            font: {
+                                size: 10,
+                                family: 'Arial'
+                            }
                         }
                     }
                 }
@@ -573,7 +603,9 @@
                 labels: ['Climate Logs', 'NDVI Indices', 'Flora Species', 'Public Reports'],
                 datasets: [{
                     label: 'Records Count',
-                    data: [{{ $climateCount }}, {{ $vegCount }}, {{ $floraCount }}, {{ $observationCount }}],
+                    data: [{{ $climateCount }}, {{ $vegCount }}, {{ $floraCount }},
+                        {{ $observationCount }}
+                    ],
                     backgroundColor: ['#1e5631', '#a3e635', '#2e3d30', '#64748b'],
                     borderWidth: 0,
                     borderRadius: 4
@@ -583,17 +615,33 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false }
+                    legend: {
+                        display: false
+                    }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: { color: '#f1f5f9' },
-                        ticks: { font: { size: 10, family: 'Arial' } }
+                        grid: {
+                            color: '#f1f5f9'
+                        },
+                        ticks: {
+                            font: {
+                                size: 10,
+                                family: 'Arial'
+                            }
+                        }
                     },
                     x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 10, family: 'Arial' } }
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 10,
+                                family: 'Arial'
+                            }
+                        }
                     }
                 }
             }
